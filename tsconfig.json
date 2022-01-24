@@ -29,7 +29,7 @@
     "gatsby-browser.ts",
     "gatsby-ssr.tsx",
     "blog-config.ts",
-    "lint-staged.config.js",
+    // "lint-staged.config.js",
     "src/stitches.config.ts"
   ]
 }
