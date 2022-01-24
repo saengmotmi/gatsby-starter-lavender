@@ -1,5 +1,5 @@
 ---
-title: graphql-code-generator 적용기
+title: 2021-12-01 graphql-code-generator 적용기
 date: 2021-12-01
 description: "커뮤니티에 질문 동냥하며 찾은 practice 정리"
 tags: [GraphQL, Development]
