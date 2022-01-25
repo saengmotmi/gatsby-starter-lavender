@@ -5,7 +5,7 @@ const config = {
   siteUrl: "https://saengmotmi.netlify.app",
   thumbnail: "/thumbnails/main.png", // Default blog thumbnail. i.e. '/thumbnails/main.png'
   social: {
-    github: "saengtmotmi", // GitHub username
+    github: "saengmotmi", // GitHub username
     twitter: "", // Twitter username
     facebook: "", // Facebook username
     linkedin: "", // LinkedIn username
