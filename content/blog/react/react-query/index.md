@@ -233,7 +233,7 @@ const TodoListContainer: React.FC<TodoListContainerProps> = ({
 export default TodoListContainer;
 ```
 
-- useGetTodos 커스텀 훅은 데이터 fetching에 대한 모든 세부 사항들을 처리하고 완료된 데이터만 컴포넌트로 전달해준다.
+- `useGetTodos` 커스텀 훅은 데이터 fetching에 대한 모든 세부 사항들을 처리하고 완료된 데이터만 컴포넌트로 전달해준다.
 
 ```tsx
 import api from "libs/api";

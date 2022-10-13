@@ -10,7 +10,7 @@ thumbnail: /thumbnails/hello-world.jpg
 
 ## 1-1) 타입스크립트를 사용하는 이유
 
-![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3bfbeaaa-aa5f-401b-a047-f57a67f12c6c/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220124%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220124T192716Z&X-Amz-Expires=86400&X-Amz-Signature=8155d832ff5dc379936bb5daddb2ec3abdf45c2a0327f198a742a78c98160eea&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22&x-id=GetObject)
+<div align="center"><img alt="img" src="./images/typescript.png" /></div>
 
 우리가 타입스크립트를 사용하는 것은 **런타임이 아닌 컴파일 타임에 정적 분석을 하여 보다 많은 타입 관련 에러들을 미리 찾아내어 안전한 서비스를 작성하기 위함**입니다.
 
@@ -34,7 +34,7 @@ VSCode 등의 IDE가 타입 추론을 기반으로 자동 완성 등의 편의 �
 
 하지만 여전히 손수 타입스크립트 타입을 타이핑 해줘야 한다는 사실에는 변함이 없습니다. 여러모로 아쉬움이 많이 남습니다. 타입을 직접 작성해주지 않는다면 API 호출을 통해 가져오는 데이터들은 전부 `any` 타입으로 추론될겁니다. 타입스크립트를 쓰는 이유가 상당 부분 반감됩니다.
 
-![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/bb6e1ffb-67bd-446b-8268-fa70555756d7/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220124%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220124T192822Z&X-Amz-Expires=86400&X-Amz-Signature=79a078639c8ca0580b5090cf8c60b3626307090242de19fa8d05710df6b6319e&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22&x-id=GetObject)
+<div align="center"><img alt="img" src="./images/typescript2.png" /></div>
 
 분명 백엔드 API 단에서 schema 파일도 작성을 하고 있고, playground에서 type도 눈으로 확인할 수 있는데, 정말로 타입스크립트 사용하기 위해서 이런 내용들을 손으로 옮겨적는게 최선일까요?
 
@@ -86,7 +86,7 @@ yarn add @graphql-codegen/near-operation-file-preset
 yarn graphql-codegen init
 ```
 
-![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/afee8443-5934-4af1-9c02-e4519cceb8c5/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220124%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220124T192906Z&X-Amz-Expires=86400&X-Amz-Signature=6079211a3de8c5af227a290465045b03118cee4db808d1660f0d27839aa5a932&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22&x-id=GetObject)
+<div align="center"><img alt="img" src="./images/codegen1.png" /></div>
 
 컴포넌트(view)와 데이터 의존성(query) 간의 Co-location(응집도를 위해 목적이 유사한 데이터들을 같은 위치에 놓는 것)을 위해 위에서 설치해준 `near-operation-file-preset`을 `codegen.yml` 파일에 적용해줍니다.
 
@@ -119,7 +119,7 @@ generates:
 
 살펴보니 `batch`, `sessionSchedules`, `student` 라는 쿼리 이름이 중복되나보군요. 애초에 Apollo에서 쿼리 이름을 기반으로 캐싱을 하기 때문에 쿼리 이름은 겹치면 안됩니다. 쿼리 이름끼리 겹치지 않도록 적절히 수정해주고 다시 시도해보겠습니다.
 
-![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/2b47da26-eed2-4bdc-8547-ed1bd7525f9d/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220124%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220124T192921Z&X-Amz-Expires=86400&X-Amz-Signature=4e1799d1549bdf57e3403c9e2f72bb8cc99631841570727909905c7e146afb2e&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22&x-id=GetObject)
+<div align="center"><img alt="img" src="./images/codegen2.png" /></div>
 
 이름이 겹치는 문제 외에도 스키마에 등록되어 있지 않은 쿼리가 클라이언트 측에 정의 되어 있으면 안되고, 로컬 state 전용 resolver의 경우에도 문제가 발생합니다.
 
@@ -136,11 +136,11 @@ export const GET_LOADING_STATE = gql`
 `;
 ```
 
-![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b81809ed-3b79-4389-9cc6-70e503853970/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220124%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220124T192936Z&X-Amz-Expires=86400&X-Amz-Signature=c9f9c2ff6d2cf9a78e6b6b462b41781636b5654d9c71f7559a41b0c4ec2203b4&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22&x-id=GetObject)
+<div align="center"><img alt="img" src="./images/codegen3.png" /></div>
 
 문제가 없었으면 다음과 같이 코드 생성에 성공하는 메시지가 출력됩니다! 와우! 👏
 
-![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/0c32e64d-42e0-4765-89e7-98042ac833eb/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220124%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220124T192945Z&X-Amz-Expires=86400&X-Amz-Signature=31b6e1ec73abe7a710cb0ff2751f67d1d36985a74b5e1c030be95d5b42e36704&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22&x-id=GetObject)
+<div align="center"><img alt="img" src="./images/codegen4.png" /></div>
 
 ## 2-3) Take a look 👀
 
@@ -158,7 +158,7 @@ export const GET_LOADING_STATE = gql`
 
 심지어 `typescript-react-apollo preset` 을 사용했기 때문에 각 operation 별로 data fetching에 필요한 custom hook을 자동으로 생성해주고, 주석까지 생성해줍니다. 아래 스크린샷 처럼요. 멋지죠? 👀
 
-![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/28c38865-e146-4283-94ef-3bcc8da81d8f/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220124%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220124T193544Z&X-Amz-Expires=86400&X-Amz-Signature=04150ac974311a40b381e934d8b46fde36e5c84fd7f35c261d9e52ed604c0710&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22&x-id=GetObject)
+<div align="center"><img alt="img" src="./images/codegen5.png" /></div>
 
 <br>
 
