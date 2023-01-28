@@ -8,7 +8,7 @@ thumbnail: /thumbnails/hello-world.jpg
 
 <br />
 
-## "Yarn Berry 쫌 멋도리 나든데 우리도 해볼까?"
+## 1. "Yarn Berry 쫌 멋도리 나든데 우리도 해볼까?"
 
 계기는 단순했습니다. 빌드 시간을 조금이라도 줄여볼 수는 없을까?
 
@@ -37,7 +37,7 @@ yarn classic에 대한 추가적인 기능 개발은 더 이상 진행되고 있
 
 <br />
 
-## Yarn Berry를 써야 할 결심
+## 2. Yarn Berry를 써야 할 결심
 
 yarn의 새로운 버전은 `node_modules`라는 설계 그 자체로 인해 생기는 막대한 비효율을 해결하고자 기획 되었습니다. 물론 `npm` 은 그간 Node 생태계를 위해 많은 일을 해왔지만 가장 첫 번째로 꼽힐 용량 문제를 제외하고서라도 많은 문제를 안고 있었습니다.
 
@@ -122,7 +122,7 @@ yarn berry 에서의 .yarn 크기 (247MB)
 
 <br />
 
-## 적용 방법 & 결과
+## 3. 적용 방법 & 결과
 
 [호환성 테이블](https://yarnpkg.com/features/pnp#compatibility-table)에서 지원하는 버전에 해당만 한다면 마이그레이션 자체는 어렵지 않습니다. `yarn`이 이미 설치되어 있다는 가정 하에 [yarn 공식 문서](https://yarnpkg.com/getting-started/migration)에서 말하는 대로 진행합니다. 정말 해결할 수 없는 문제가 있다면 nodeLinker 설정을 loose 혹은 node-modules로 바꿔야([링크](https://yarnpkg.com/getting-started/migration#if-required-enable-the-node-modules-plugin)) 합니다.
 
@@ -142,13 +142,17 @@ packageExtensions:
         optional: true
 ```
 
-**1) yarn 버전 변경**
+<br/>
+
+### 1) yarn 버전 변경
 
 ```bash
 > yarn set version berry # v1.x로 돌아가려면 yarn set version classic
 ```
 
-**2) `.gitignore` 설정**
+<br />
+
+### 2) `.gitignore` 설정
 
 [문서](https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored)(Zero-Installs 기준)를 따라 `.gitignore`에 아래 경로를 추가해줍니다. `!` 는 제외할(gitignore) 경로에서 빼달라는 뜻이므로 `.yarn` 이하 경로 중 포함시킬 경로들을 명시한 것으로 생각하시면 됩니다. 부정의 부정이라 좀 헷갈리긴 하네요. 각 경로의 역할에 대한 자세한 설명은 공식 문서에서 확인하실 수 있습니다.
 
@@ -162,7 +166,9 @@ packageExtensions:
 !.yarn/versions
 ```
 
-**3) `.npmrc`, `.yarnrc`를 `.yarnrc.yml` 로 마이그레이션**
+<br>
+
+### 3) `.npmrc`, `.yarnrc`를 `.yarnrc.yml` 로 마이그레이션
 
 berry로 버전을 변경하게 되면 루트 경로에 .yarnrc.yml 파일이 생성됩니다. 기존에 있던 .npmrc, .yarnrc는 지원하지 않기 때문에 [문서](https://yarnpkg.com/configuration/yarnrc)를 확인하여 각각의 옵션을 마이그레이션 해주면 됩니다.
 
@@ -202,7 +208,9 @@ packageExtensions:
 
 여기까지 마무리 되었으면 한번 커밋하여 진행 상황을 저장합니다.
 
-**4) yarn berry를 IDE와 통합 (with. TypeScript)**
+<br>
+
+### 4) yarn berry를 IDE와 통합 (with. TypeScript)
 
 지금까지는 패키지 매니저 레벨에서 마이그레이션 할 것들을 처리해주었습니다. 이제 IDE에 의존성과 타입 정보를 node_modules가 아닌 .yarn에서 읽어오도록 알려주어야 합니다. VSCode 기준으로 설명하겠습니다.
 
@@ -253,7 +261,9 @@ ZipFS 설치
 
 여기까지 진행 한 뒤 다시 한번 진행 상황 저장을 위해 커밋합니다.
 
-**5) Dockerfile 수정**
+<br>
+
+### 5) Dockerfile 수정
 
 이상 로컬에서 필요한 작업들은 모두 완료를 해주었습니다. 배포 시 도커를 사용하고 있으므로 `Dockerfile`에도 필요한 작업을 해줍니다. 아래와 같이 작업을 해주었으며 필요한 설명은 파일 내 주석으로 추가해두었습니다.
 
@@ -269,7 +279,9 @@ COPY .yarn                        ./.yarn
 
 위와 같은 과정을 거치면 yarn berry의 zero install을 사용할 수 있게 됩니다. 개선된 빌드 시간은 프로젝트마다 차이가 있으나 지금까지 적용해본 케이스들에서는 약 50초 ~ 1분 정도의 시간 단축이 있었습니니다.
 
-**6) AWS Codebuild에서 Docker Layer가 로컬 캐싱될 수 있도록 세팅**
+<br>
+
+### 6) AWS Codebuild에서 Docker Layer가 로컬 캐싱될 수 있도록 세팅
 
 yarn berry와는 무관한 주제지만, 배포 성능을 개선하는 도중에 진행했던 변경이라 함께 언급해보겠습니다.
 
@@ -298,9 +310,9 @@ AWS Codebuild - 편집 - 아티팩트 - 캐싱 메뉴 하단
 
 <br />
 
-## 트러블 슈팅
+## 4. 트러블 슈팅
 
-**1) 커밋에 포함되지 않는 종속성 문제**
+### 1) 커밋에 포함되지 않는 종속성 문제
 
 `yarn install` 시 커밋에 포함되지 않는 파일들이 있습니다. `.yarn/install-state.gz` 같은 경우 최적화 관련 파일이기 때문에 애초에 커밋할 필요 없다고 공식 문서에서 안내하고 있습니다.
 
@@ -320,7 +332,7 @@ AWS Codebuild - 편집 - 아티팩트 - 캐싱 메뉴 하단
 
 <br />
 
-**2) ESLint import/order 관련 이슈**
+### 2) ESLint import/order 관련 이슈
 
 `eslint`에서 import 관련 룰을 사용하고 있다면 추가 세팅이 필요합니다. `eslint-plugin-import` 에서 제공하는 `import/order` 옵션을 활용해 다음과 같이 외부 의존성과 내부 의존성을 구분지어 줄바꿈 해주고 있었습니다.
 
@@ -381,7 +393,7 @@ const getExternals = () => {
 
 <br />
 
-**3) yarn berry에서 pre-hook 지원하지 않음**
+### 3) yarn berry에서 pre-hook 지원하지 않음
 
 yarn 2.x 버전 부터는 pre-hook(ex. `preinstall`, `prepare` 등) 을 지원하지 않습니다. [문서](https://yarnpkg.com/advanced/lifecycle-scripts#gatsby-focus-wrapper)에 따르면 이는 사이드 이펙트를 줄이기 위한 의도적인 변경이라고 하며, 호환성을 위해서 `preinstall`과 `install`은 `postinstall`의 일부로서 실행됩니다.
 
@@ -393,7 +405,7 @@ yarn 2.x 버전 부터는 pre-hook(ex. `preinstall`, `prepare` 등) 을 지원�
 
 <br />
 
-**4) yarn berry와 vite를 함께 사용할 때 storybook이 실행되지 않는 문제**
+### 4) yarn berry와 vite를 함께 사용할 때 storybook이 실행되지 않는 문제
 
 <p align="center"> 
   <img src="https://user-images.githubusercontent.com/35240142/215242682-106bffb8-6eb7-452a-86f1-869726aa4b17.png" alt="cache" width="number" />
@@ -411,9 +423,11 @@ yarn 2.x 버전 부터는 pre-hook(ex. `preinstall`, `prepare` 등) 을 지원�
 
 <br />
 
-## 마치며
+## 5. 마치며
 
-yarn berry와 pnp는 과감하면서도 멋진 진전이라고 생각합니다. 위에 말씀드린 이슈들처럼 아직 사용자들이 직접 부딪혀야 하는 문제들이 산재해있지만, 기술이 처음 공개되었을 때와 비교하면 현재 이 리스크들은 감내할 수 있는 수준이라고 생각합니다. `yarn unplug`, `yarn why`, `yarn patch` 등의 기능을 활용하여 디버깅하고, 긴급한 상황에서는 `nodeLinker: node-modules` 로 되돌리거나 `pnpMode: loose` 등의 절충점이 존재하므로 자신 있게 도입해볼 수 있을 것 같습니다.
+yarn berry와 pnp는 과감하면서도 멋진 진전이라고 생각합니다. 빌드 결과물의 크기 감소, 로컬과 리모트 환경에서의 빌드 결과물의 동일성 보장 / 안정성 향상 등의 이점은 기존 버전 대비 방법론적인 개선을 통해 얻을 수 있었던 성과입니다.
+
+물론 위에 말씀드린 이슈들처럼 아직 사용자들이 직접 부딪혀야 하는 문제들이 산재해있지만, 기술이 처음 공개되었을 때와 비교하면 현재 이 리스크들은 감내할 수 있는 수준이라고 생각합니다. `yarn unplug`, `yarn why`, `yarn patch` 등의 기능을 활용하여 디버깅하고, 긴급한 상황에서는 `nodeLinker: node-modules` 로 되돌리거나 `pnpMode: loose` 등의 절충점이 존재하므로 자신 있게 도입해볼 수 있을 것 같습니다.
 
 사실 yarn berry를 도입하는 과정에서 가장 좋았던 점은 성능상의 이점보다도, yarn이나 여러 패키지 내부의 코드를 살펴보며 동작 원리를 가늠하거나, Github에 올라온 issue들을 싹싹 긁어가며 읽고, peerDependencies 등 종속성들 간의 관계를 생각하며 패키지를 이리저리 설치해보던 시간들이었습니다.
 
@@ -421,7 +435,7 @@ yarn berry와 pnp는 과감하면서도 멋진 진전이라고 생각합니다. 
 
 <br />
 
-## 참고 자료
+## 6. 참고 자료
 
 - [https://yarnpkg.com/](https://yarnpkg.com/)
 - [node_modules로부터 우리를 구원해 줄 Yarn Berry](https://toss.tech/article/node-modules-and-yarn-berry)
