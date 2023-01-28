@@ -1,6 +1,6 @@
 ---
 title: 2023-01-28 Yarn Berry 마이그레이션 후기
-date: 2023-01-01
+date: 2023-01-28
 description: 이제는 없으면 섭섭한 Yarn PnP...
 tags: [yarn, yarn berry, zero install, 패키지 매니저]
 thumbnail: /thumbnails/hello-world.jpg
