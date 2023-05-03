@@ -8,7 +8,7 @@ thumbnail: /thumbnails/hello-world.jpg
 
 `React.lazy()`는 React 애플리케이션에서 코드 분할을 쉽게 구현할 수 있는 API입니다. 이를 사용하면 렌더링 시 필요한 컴포넌트만 로드할 수 있어 초기 로딩 시간을 줄일 수 있습니다. `React.lazy()`는 주로 `React.Suspense`와 함께 사용됩니다.
 
-아래는 RFC(https://github.com/reactjs/rfcs/blob/main/text/0064-lazy.md)의 원문 일부와 그 대목을 번역한 내용입니다. (땡스 DeepL…)
+아래는 RFC(https://github.com/reactjs/rfcs/blob/main/text/0064-lazy.md) 의 원문 일부와 그 대목을 번역한 내용입니다. (땡스 DeepL…)
 
 _`React.lazy` adds `first-class` support for code splitting components to React. It takes a module object and returns a special component type._
 
@@ -78,7 +78,7 @@ class LazyComponent extends React.Component {
 
 ES6 미만의 환경에서는 이 기능을 사용하기 위해 Babel의 도움을 받고 있을 것으로 예상할 수 있습니다.
 
-Babel에는 `@babel/plugin-syntax-dynamic-import`(https://babeljs.io/docs/babel-plugin-syntax-dynamic-import)라는 플러그인이 존재하는 군요. 근데 세부 구현을 찾을 수가 없어서 `babel-plugin-dynamic-import-node`(https://github.com/airbnb/babel-plugin-dynamic-import-node/blob/master/src/index.js)도 링크 추가해둡니다.
+Babel에는 `@babel/plugin-syntax-dynamic-import`(https://babeljs.io/docs/babel-plugin-syntax-dynamic-import) 라는 플러그인이 존재하는 군요. 근데 세부 구현을 찾을 수가 없어서 `babel-plugin-dynamic-import-node`(https://github.com/airbnb/babel-plugin-dynamic-import-node/blob/master/src/index.js) 도 링크 추가해둡니다.
 
 ```js
 // input
