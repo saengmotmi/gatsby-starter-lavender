@@ -130,7 +130,7 @@ function importModule(url) {
 
 다시 React 맥락으로 돌아와보겠습니다. React 코드 베이스에서 확인할 수 있는 `React.lazy()`의 코드는 생각보다 길지 않습니다. 전체 코드를 가져와보겠습니다.
 
-```jsx
+```tsx
 // https://github.com/facebook/react/blob/main/packages/react/src/ReactLazy.js
 import type { Wakeable, Thenable } from "shared/ReactTypes";
 
