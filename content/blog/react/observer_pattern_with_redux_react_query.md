@@ -154,7 +154,7 @@ export class Subscribable<TListener extends Function = Listener> {
 
 가치를 부정당할지도 모른다는 위기감이 나를 움직이던 시기에 redux의 구현을 접하게 된 것을 시작이었고, 어떠한 기대도 없이 react-query의 구현을 살피다 문득 익숙한 추억을 발견했을 때의 감정이란. 내겐 그간의 발버둥을 통해 내가 이 세계에 무사히 안착했음을 알리는 하나의 사건이었다. 이 때의 감흥은 결코 잊지 못할 에피소드로 남게 될 것 같다.
 
-이후의 구현은 아래 하이라이트 쳐둔 부분을 읽어보면 어렵지 않게 파악할 수 있을 것 같다. Subscribable은 구독 관련한 기본 기능과, 자식 클래스에서 상속으로 구현해야 하는 두 메서드들의 자리만 만들어두고 있다. QueryObserver에서는 이를 상속받고 추가적으로 `notify`를 구현한다. redux의 dispatch로 보면 될 것 같다.
+이후의 구현은 아래 코드를 읽어보면 어렵지 않게 파악할 수 있을 것 같다. Subscribable은 구독 관련한 기본 기능과, 자식 클래스에서 상속으로 구현해야 하는 두 메서드들의 자리만 만들어두고 있다. QueryObserver에서는 이를 상속받고 추가적으로 `notify`를 구현한다. redux의 dispatch로 보면 될 것 같다.
 
 ```tsx
 // queryObserver
