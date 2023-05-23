@@ -67,7 +67,7 @@ createStore의 원본 코드는 [https://github.com/reduxjs/redux/blob/master/sr
 다시 시간이 흘러 2022년 여름 쯤, 뇌가 완전히 `useQuery`에 절여졌을 때 쯤 우연한 기회로 react-query 내부를 뜯어볼 일이 생겼고, 그 안에서 익숙한 향기를 맡게 되었다.
 
 ```tsx
-//
+// useBaseQuery
 const [observer] = React.useState(
   () =>
     new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(
