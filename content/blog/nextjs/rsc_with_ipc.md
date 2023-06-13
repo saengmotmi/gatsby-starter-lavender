@@ -1,18 +1,18 @@
 ---
-title: 2023-06-13 Next.js 13의 서버는 두 개란다
+title: 2023-06-13 Next.js 13의 서버는 한 개가 아니란다
 date: 2023-06-13
-description: IPC라고 있는데... 처음 들어보시나요?
+description: IPC라고 있는데... 처음 들어보시나요? 사실 저도...
 tags: [React, Nextjs, Development]
 thumbnail: /thumbnails/hello-world.jpg
 ---
 
-## Next.js 13의 서버는 두 개란다
+## Next.js 13에서 왜 IPC 서버를 추가 구현했을까?
 
 사실 처음에 이 이슈로 파고들게 된 경위는 최근 새롭게 발표된 Server Actions 가 내부적으로 도대체 어떻게 동작하는건지 감도 안잡혀서 관련한 구현을 찾아보려고 했던 게 시작이었다. 하지만 Next.js는 React와 다르게 RFC로 미리 공개하고 작업하기 보다는 내부에서 뚝딱 뚝딱 만들어서 갑자기 짠! 하거나 트위터에서 관련 개발자들이 주절대는 내용으로 흘러나오는 것들이 대부분인 듯 했고 진척은 지지부진 했다.
 
-그렇게 뒤적거리다 https://github.com/vercel/next.js/blob/canary/packages/next/src/server/lib/server-ipc/index.ts 이 코드를 발견하게 되었고 나는 조금 당혹스러워졌다. 왜냐하면 원래 Next.js는 내부적으로 `http` 모듈을 기반으로 띄운 단일 Node.js 서버에서 요청을 받고, HTML을 그려 응답을 내보내 주는 형태의 구현이었는데, 이 코드를 보니 이전에 보지 못했던 `createIpcServer()` 라는 함수와 `createWorker()`라는 함수로 부터 적어도 하나 이상의 서버가 존재함을 알 수 있었기 때문이다.
+그렇게 뒤적거리다 https://github.com/vercel/next.js/blob/canary/packages/next/src/server/lib/server-ipc/index.ts 이 코드를 발견하게 되었고 나는 조금 당혹스러워졌다. 왜냐하면 원래 Next.js는 내부적으로 `http` 모듈을 기반으로 띄운 단일 Node.js 서버에서 요청을 받고, HTML을 그려 응답을 내보내 주는 형태의 구현이었는데, 이 코드를 보니 이전에 보지 못했던 `createIpcServer()` 라는 함수와 `createWorker()`라는 함수로 부터 적어도 하나 이상의 서버가 존재함을 알게 되었기 때문이다.
 
-최초 구현은 https://github.com/vercel/next.js/pull/47208 여기서 되었고, pages 라우트와 app 라우트를 분리하는 작업이 이루어졌다. 핵심 코드는 다음과 같다.
+최초 구현은 https://github.com/vercel/next.js/pull/47208 여기서 되었고, pages 라우트와 app 라우트를 분리하는 작업이다. 핵심 코드는 다음과 같다.
 
 ```ts
 // packages/next/src/server/next-server.ts (constructor)
@@ -43,7 +43,7 @@ this.renderWorkersPromises = new Promise<void>(async (resolveWorkers) => {
     // 생략
 ```
 
-IPC(Inter-Process Communication)는 여기서 처음 접한 개념인데, 약어를 풀어보았을 때 볼 수 있듯 프로세스 간 통신을 중개하는 방식의 하나이다. 이전에는 단일 프로세스에서 요청을 받고 응답을 내보내는 방식이었다면, 이제는 IPC 서버를 중심으로 개별 Worker에서 목적에 맞는 작업을 수행하면서, 필요할 경우 IPC 서버를 통해 다른 Worker에 요청을 보내는 방식으로 동작하게 된다.
+`IPC(Inter-Process Communication)`는 여기서 처음 접한 개념인데, 약어를 풀어보았을 때 볼 수 있듯 프로세스 간 통신을 중개하는 방식의 하나이다. 이전에는 단일 프로세스에서 요청을 받고 응답을 내보내는 방식이었다면, 이제는 IPC 서버를 중심으로 개별 Worker에서 목적에 맞는 작업을 수행하면서, 필요할 경우 IPC 서버를 통해 다른 Worker에 요청을 보내는 방식으로 동작하게 된다. 현재 코드 상으로는 각 라우트 방식마다 독립적인 Worker를 생성하고 그 결과물을 IPC 서버를 통하여 주고 받는 방식으로 되어 있다.
 
 다시 `/server-ipc/index.ts`를 들여다보면 Node.js의 API를 직접 사용하여 Worker를 생성하지 않고 `jest-worker`를 사용한 것이 인상적이다. https://github.com/jestjs/jest/tree/main/packages/jest-worker 여기서 읽어봐도 딱히 특별한 점은 잘 모르겠지만 아무튼 Worker를 생성하고 관리하는 차원에서 이런저런 편의 기능을 제공하나보다.
 
@@ -167,7 +167,7 @@ child.on("message", (msg) => {
 
 아무튼 이차저차 해서 워커를 등록한 뒤 아래 코드와 같이 앞에서 세팅된 `renderWorkersPromises`를 일단 먼저 해소하고 값을 비운 뒤(일단), renderKind(`app` or `pages`) 플래그로 분기를 태워 적당한 Worker를 호출한다.
 
-App Router의 경우에는 `renderWorkersPromises`가 최초 해소되는 지점에서 RSC를 일단 렌더링 하고 스트리밍으로 추가 렌더링 요소들을 넘겨주지 않으려나 싶다.
+아래 `generateRoutes` 쪽 코드를 보면 `renderWorkersPromises`가 최초 해소되는 지점에서 IPC 서버와 워커들이 등록된다. 그 다음 요청을 받은 IPC는 각 renderKind에 맞는 로직을 워커에 명령하고 응답을 다시 `invokeRes`에 돌려준다. 최종 결과물은 `this.streamResponseChunk`로 쌓이게 된다.
 
 ```ts
 // packages/next/src/server/next-server.ts (generateRoutes)
