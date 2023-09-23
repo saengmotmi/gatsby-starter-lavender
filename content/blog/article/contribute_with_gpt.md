@@ -100,40 +100,38 @@ options?: SWRMutationConfiguration<
 
 그래도 구체적으로 어떻게 변경할지를 제안 받으니 길이 보이는듯 했다. 하지만 제네릭 서커스에 약한 나로서는 어떻게 구현을 해야 할지 잘 감이 오지 않았는데, 이 역시도 GPT의 도움을 받아 방향을 잡을 수 있었다.
 
-> 아하, 제공해 주신 코드를 보니 이해가 되었습니다. 여기서 타입스크립트의 조건부 타입을 사용하여 `ExtraArg`가 `never`인 경우와 아닌 경우에 대해 다른 함수 시그니처를 제공하고 있습니다.
+GPT와 한참을 핑퐁을 나눈 뒤에야 거의 완벽한 정답에 도달할 수 있었다.
+
+> 앗, 그렇네요. `[ExtraArg] extends [undefined | any]` 조건은 사실상 항상 참이므로 `TriggerWithArgs`로 빠지는 경우가 사실상 없게 됩니다. 이를 해결하기 위해 `ExtraArg`가 `undefined`를 포함하는지 확인하는 조건을 좀 더 세밀하게 만들어야 합니다.
 >
-> 그렇다면 문제의 원인은 이 조건부 타입 때문에 발생하는 것 같습니다. `ExtraArg`가 `never`이 아닌 경우, 즉 `ExtraArg`에 뭔가 값이 존재하는 경우, 함수는 `extraArgument`를 필수 인자로 강제하고 있습니다. 그래서 함수를 호출할 때 `undefined`를 명시적으로 전달해야 하는 상황이 발생한 것 같습니다.
->
-> 이 문제를 해결하려면, `ExtraArg`가 `never`이 아닌 경우에도 `extraArgument`를 선택적 인자로 만들어야 할 것 같습니다. 이렇게 수정하면 `extraArgument`에 `undefined`를 명시적으로 전달하지 않아도 될 것입니다. 다음과 같이 코드를 수정해 보세요:
+> `ExtraArg`가 `undefined`를 포함하는지 확인하려면 `undefined`가 `ExtraArg`의 subtype인지 확인해야 합니다. TypeScript에서 이를 확인하는 방법은 다음과 같습니다:
 >
 > ```ts
-> trigger: <SWRData = Data>(
->   extraArgument?: ExtraArg,
->   options?: SWRMutationConfiguration<
->     Data,
->     Error,
->     ExtraArg,
->     SWRMutationKey,
->     SWRData
->   >
-> ) => Promise<Data | undefined>
+> type IsUndefinedIncluded<T> = undefined extends T ? true : false;
 > ```
 >
-> 이렇게 수정하면 `extraArgument`는 `ExtraArg` 타입의 값이거나 `undefined`가 될 수 있으므로, `ExtraArg`에 값이 있는 경우에도 `extraArgument`를 명시적으로 전달하지 않아도 됩니다.
+> 이제 `IsUndefinedIncluded` 타입을 사용하여 `trigger` 필드의 타입을 다시 수정하겠습니다:
 >
-> 다만, 이 수정이 `ExtraArg`가 `never`일 때의 기존 의도를 해치지 않는지 확인해야 합니다. 원래의 코드가 `ExtraArg`가 `never`일 때는 `extraArgument`를 받지 않게 하려는 의도였다면, 이 변경은 그 의도를 해칠 수 있습니다. 이 부분은 확인이 필요합니다.
+> ```ts
+> interface SWRMutationResponse<
+>   Data = any,
+>   Error = any,
+>   ExtraArg = never,
+>   SWRMutationKey extends Key = Key
+> > extends Pick<SWRResponse<Data, Error>, "data" | "error"> {
+>   // ...
+>   trigger: [ExtraArg] extends [never]
+>     ? TriggerWithoutArgs<Data, Error, ExtraArg, SWRMutationKey>
+>     : IsUndefinedIncluded<ExtraArg> extends true
+>     ? TriggerWithOptionsArgs<Data, Error, SWRMutationKey, ExtraArg>
+>     : TriggerWithArgs<Data, Error, SWRMutationKey, ExtraArg>;
+>   // ...
+> }
+> ```
+>
+> 이제 `trigger` 필드는 `ExtraArg`가 `undefined`를 포함하면 `TriggerWithOptionsArgs` 타입을, 그렇지 않으면 `TriggerWithArgs` 타입을 사용하게 됩니다. 이렇게 하면 `ExtraArg`가 `undefined`를 포함하는 경우와 그렇지 않은 경우를 모두 적절하게 처리할 수 있습니다.
 
-모든 아이디어를 반영하여 최종적으로 작성한 코드(더 있긴 하지만)는 아래와 같다. 테스트 코드도 간단히 추가했다.
-
-```ts
-trigger: [ExtraArg] extends [never]
-  ? TriggerWithoutArgs<Data, Error, SWRMutationKey, ExtraArg>
-  : IsUndefinedIncluded<ExtraArg> extends true
-  ? TriggerWithOptionsArgs<Data, Error, SWRMutationKey, ExtraArg>
-  : TriggerWithArgs<Data, Error, SWRMutationKey, ExtraArg>
-```
-
-그리곤 역시나 GPT에게 메인테이너에게 답변할 내용에 대해 번역을 부탁했고, 메인테이너가 잘 알아들었다! 솔직히 나는 컨트리뷰트 한 내용 자체보다도 외국의 개발자와 영어로 기술적인 문제에 대해 소통을 하고 있다는 사실 자체가 더 신기했던 것도 같다.
+그리곤 역시나 GPT에게 메인테이너에게 답변할 내용에 대해 번역을 부탁하여 다시 한번 코멘트를 남겼고, 메인테이너가 잘 알아들었다! 솔직히 나는 컨트리뷰트 한 내용 자체보다도 외국의 개발자와 영어로 기술적인 문제에 대해 소통을 하고 있다는 사실 자체가 더 신기했던 것도 같다.
 
 사실 중간중간 생략된 것도 있고, pnpm 환경 세팅 하느라 번거로웠던 부분도 있지만... 아무튼 약간의 기다림과 함께 내 변경 사항은 머지되었고 `swr@2.2.0`에 반영되어 배포됐다!
 
