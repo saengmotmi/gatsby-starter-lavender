@@ -1,10 +1,12 @@
 ---
-title: 2023-06-20 ChatGPT로 SWR 컨트리뷰트 날로 먹어보기
-date: 2023-06-20
+title: 2023-09-23 ChatGPT로 SWR 컨트리뷰트 날로 먹어보기
+date: 2023-09-23
 description: 헤이 GPT, 컨트리뷰트 "해 줘"
 tags: [Article]
 thumbnail: /thumbnails/hello-world.jpg
 ---
+
+> 주의: 이 글은 2023-06-20를 기준으로 작성되었으며, 약간의 윤문을 거쳐 최근 발행되었습니다.
 
 얼마 전 `SWR`에 내가 올린 PR(https://github.com/vercel/swr/pull/2666) 이 머지되었다. 동네방네 떠들고 다닌 걸로 모자라 블로그까지 쓴다.
 

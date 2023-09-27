@@ -32,7 +32,7 @@ const BlogIndex = ({
   const posts = filterPostsByTag(
     filterPostsByTitle(data.allMarkdownRemark.nodes, titleFilter),
     currentTag
-  );
+  ).filter((post) => !post.frontmatter?.draft);
   const articlePerPage = 5;
   const totalPage = Math.ceil(posts.length / articlePerPage);
 
@@ -116,6 +116,7 @@ export const pageQuery = graphql`
           title
           description
           tags
+          draft
         }
       }
     }

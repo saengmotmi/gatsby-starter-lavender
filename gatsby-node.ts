@@ -1,18 +1,26 @@
-import * as path from 'path';
+import * as path from "path";
 
-import type { CreateNodeArgs, CreatePagesArgs, CreateSchemaCustomizationArgs } from 'gatsby';
-import { createFilePath } from 'gatsby-source-filesystem';
+import type {
+  CreateNodeArgs,
+  CreatePagesArgs,
+  CreateSchemaCustomizationArgs,
+} from "gatsby";
+import { createFilePath } from "gatsby-source-filesystem";
 
-export const createPages = async ({ graphql, actions, reporter }: CreatePagesArgs) => {
-  const blogPost = path.resolve('./src/templates/blog-post.tsx');
+export const createPages = async ({
+  graphql,
+  actions,
+  reporter,
+}: CreatePagesArgs) => {
+  const blogPost = path.resolve("./src/templates/blog-post.tsx");
 
   const result: {
     errors?: Error;
     data?: {
       allMarkdownRemark: {
-        nodes: GatsbyTypes.MarkdownRemark[]
-      }
-    }
+        nodes: GatsbyTypes.MarkdownRemark[];
+      };
+    };
   } = await graphql(`
     {
       allMarkdownRemark(
@@ -31,7 +39,7 @@ export const createPages = async ({ graphql, actions, reporter }: CreatePagesArg
 
   if (result.errors) {
     reporter.panicOnBuild(
-      'There was an error loading your blog posts',
+      "There was an error loading your blog posts",
       result.errors
     );
     return;
@@ -42,10 +50,11 @@ export const createPages = async ({ graphql, actions, reporter }: CreatePagesArg
   if (posts !== undefined && posts.length > 0) {
     posts.forEach((post, index) => {
       const previousPostId = index === 0 ? null : posts[index - 1].id;
-      const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id;
+      const nextPostId =
+        index === posts.length - 1 ? null : posts[index + 1].id;
 
       actions.createPage({
-        path: post.fields?.slug || '',
+        path: post.fields?.slug || "",
         component: blogPost,
         context: {
           id: post.id,
@@ -58,18 +67,20 @@ export const createPages = async ({ graphql, actions, reporter }: CreatePagesArg
 };
 
 export const onCreateNode = ({ node, actions, getNode }: CreateNodeArgs) => {
-  if (node.internal.type === 'MarkdownRemark') {
+  if (node.internal.type === "MarkdownRemark") {
     const value = createFilePath({ node, getNode });
 
     actions.createNodeField({
-      name: 'slug',
+      name: "slug",
       node,
       value,
     });
   }
 };
 
-export const createSchemaCustomization = ({ actions }: CreateSchemaCustomizationArgs) => {
+export const createSchemaCustomization = ({
+  actions,
+}: CreateSchemaCustomizationArgs) => {
   actions.createTypes(`
     type SiteSiteMetadata {
       author: String
@@ -98,6 +109,7 @@ export const createSchemaCustomization = ({ actions }: CreateSchemaCustomization
       date: Date @dateformat
       tags: [String]
       thumbnail: String
+      draft: Boolean
     }
 
     type Fields {
