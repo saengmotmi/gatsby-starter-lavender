@@ -54,7 +54,7 @@ DB에 직접 액세스 하는 코드가 있습니다. 이 코드는 Node.js 서�
 
 이제 난관에 봉착했습니다. 어떻게 하죠?
 
-## 2) Isomorphic was the new black
+## "Isomorphic was the new black"
 
 아니, 애초에 왜 이런 부조리해보이는 Isomorphic 컴포넌트 설계를 도입한걸까요? 이에 대해 찾아보던 중 2015년, [React 초기 시점에 작성된 한 기사](https://www.smashingmagazine.com/2015/04/react-to-the-future-with-isomorphic-apps/)를 발견했고 실마리를 얻었습니다.
 
@@ -143,7 +143,7 @@ export default App;
 
 그 동안 이 설명의 연결고리가 빠지니 RSC가 하늘에서 뚝 떨어진 것처럼 보였지만 이제야 제 자리를 찾은 느낌입니다. 이제 역사의 시계는 한바퀴 돌아 제자리로 돌아왔습니다.
 
-## 오래된 미래, React Server Components
+## 오래된 미래, Suspense & React Server Components
 
 슬슬 이야기가 결말을 향해 가고 있는데요. 잠시 Suspense 얘기로 빠져보겠습니다.
 
