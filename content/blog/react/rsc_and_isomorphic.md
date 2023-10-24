@@ -153,7 +153,23 @@ export default App;
 
 페이지릿이란 웹 페이지의 한 부분으로, 일반적으로 하나 이상의 컴포넌트로 구성되며 독립적으로 렌더링될 수 있습니다. BigPipe는 각 페이지릿이 비동기적으로 렌더링될 수 있게 하여, 서버에서 클라이언트로 페이지의 일부분을 빠르게 스트리밍할 수 있게 합니다. 음… 이거 어디서 들어본 이야기 아닌가요? ㅎㅎ
 
-그렇습니다. BigPipe는 Suspense와 Streaming SSR의 선행 기술입니다. 실제로 위에 링크된 BigPipe의 Streaming SSR 아티클 내용을 잘 살펴보면 React 18 버전에서 구현된 `renderToPipeableStream`과 같은 구조로 스트리밍 하고 있음을 확인할 수 있습니다.
+그렇습니다. BigPipe는 `Suspense`와 `Streaming SSR`의 선행 기술입니다. 실제로 위에 링크된 BigPipe의 Streaming SSR 아티클 내용을 잘 살펴보면 React 18 버전에서 구현된 `renderToPipeableStream`과 같은 구조로 스트리밍 하고 있음을 확인할 수 있습니다.
+
+요약하면 placeholder를 포함한(React 18 기준으로는 '서스펜스 경계') 미완성 페이지를 먼저 렌더링 하고, 후속 청크에서 이 placeholder 부분을 replace 하는 로직이 포함된 script 태그 덩어리를 후속 통신으로 받아 추가 렌더링하는 기법입니다.
+
+> The tag includes BigPipe’s JavaScript library to interpret pagelet responses to be received later. In the tag, there is a template that specifies the logical structure of page and the placeholders for pagelets. For example:
+
+```html
+<p><div id=”left_column”> <div id=”pagelet_navigation”></p></p><div id=”middle_column”> <div id=”pagelet_composer”></p><div id=”pagelet_stream”></p></p><div id=”right_column”> <div id=”pagelet_pymk”></p><div id=”pagelet_ads”></p><div id=”pagelet_connect”></p></p></p>
+```
+
+> After flushing the first response to the client, web server continues to generate pagelets one by one. As soon as a pagelet is generated, its response is flushed to the client immediately in a JSON-encoded object that includes all the CSS, JavaScript resources needed for the pagelet, and its HTML content, as well as some meta data. For example:
+
+```js
+<script type="text/javascript"> big_pipe.onPageletArrive({id: “pagelet_composer”, content=<HTML>, css=[..], js=[..], …}) </script>
+```
+
+> At the client side, upon receiving a pagelet response via “onPageletArrive” call, BigPipe’s JavaScript library first downloads its CSS resources; after the CSS resources are downloaded, BigPipe displays the pagelet by setting its corresponding placeholder div’s innerHTML to the pagelet’s HTML markup.
 
 이제 다시 RSC로 돌아와보겠습니다.
 
@@ -198,8 +214,6 @@ echo <my-component name="World" />;
 
 Suspense는 React SSR에 BigPipe 아키텍처를 가져오기 위해 설계된 것이 맞습니다. 그러나 React Core 팀이 서버에서 데이터를 어떻게 가져올지에 대한 방법을 아직 몰랐기 때문에, 먼저 클라이언트에서 출시하게 된 것입니다. 서버 데이터 패칭에 대해 더 고민하면서 이것이 앞서 언급한 과거의 XHP 스택과 더 유사하게 작동해야 한다는 것을 깨달았고, 그 결과 `React Server Components(RSC)`가 탄생하게 되었다는 설명이 좀 더 정확합니다.
 
-정리하자면, 페이스북에서 XHP는 서버용 MVC의 원래 대안이었고, React는 클라이언트용 MVC의 대안이었습니다. 비록 기술적으로는 다르지만, 그 정신은 비슷했습니다. 이러한 작업은 대략 [2019년 쯤 부터 React Flight라는 코드네임으로 진행](https://twitter.com/dan_abramov/status/1193001108102373376?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1193001108102373376%7Ctwgr%5Edb15298c3d3587da3cb82f9489113a0d1da293f5%7Ctwcon%5Es1_&ref_url=https%3A%2F%2Fwww.notion.so%2Foj8mm%2F4-2-React-Server-Component-App-Router-c0ece3269d12456cba70023ad2d99ef1)되어 왔던 것으로 보입니다.
-
-그리고 우리가 지금까지 알고 있던 React는 사실 `클라이언트용 MVC` 의 대안이었고, 이제 남아 있던 마지막 퍼즐이 맞춰지는 순간을 맞았습니다. 여러 가지 과거의 유산들을 현재로 다시 불러오면서 서버와 클라이언트 사이 끊긴 다리를 잇는데 성공한 것입니다.
+정리하자면, 페이스북에서 XHP는 서버용 MVC의 원래 대안이었고, React는 클라이언트용 MVC의 대안이었습니다. 비록 기술적으로는 다르지만, 그 정신은 비슷했습니다. 이러한 작업은 대략 [2019년 쯤 부터 React Flight라는 코드네임으로 진행](https://twitter.com/dan_abramov/status/1193001108102373376?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1193001108102373376%7Ctwgr%5Edb15298c3d3587da3cb82f9489113a0d1da293f5%7Ctwcon%5Es1_&ref_url=https%3A%2F%2Fwww.notion.so%2Foj8mm%2F4-2-React-Server-Component-App-Router-c0ece3269d12456cba70023ad2d99ef1)되어 왔던 것으로 보입니다. 이제 남아 있던 마지막 퍼즐이 맞춰지며 서버용 MVC - 클라이언트용 MVC 모델이 React 18에 이르러 합쳐지는 순간을 맞았습니다. 여러 가지 과거의 유산들을 현재로 다시 불러오면서 서버와 클라이언트 사이 끊긴 다리를 잇는데 성공한 것입니다.
 
 먼길 돌아온 제자리 같은 느낌도 들지만 저는 개인적으로 "RSC는 PHP로의 회귀다" 라는 표현에 동의하지는 않습니다. 다만 글이 너무 길어졌으므로 여기서 한번 끊고, 다음에 기회가 된다면 더 자세히 이야기 나눠보도록 하겠습니다. 긴 글 읽어주셔서 감사합니다.
