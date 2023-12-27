@@ -1,6 +1,6 @@
 ---
 title: 2023-12-27 2023까지 내가 기술적으로 깨달은 것들
-date: 2024-01-01
+date: 2023-12-27
 description: 2024 레지고 레지고~
 tags: [Article]
 thumbnail: /thumbnails/hello-world.jpg
