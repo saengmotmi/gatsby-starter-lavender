@@ -170,53 +170,80 @@ LexicalEnvironment는 실행 시간 동안 업데이트 될 수 있는 반면, V
 TDZ까지 반영한 실행 컨텍스트의 구현은 아래와 같다.
 
 ```jsx
-function createExecutionContext(code) {
-  var VariableEnvironment = {
-    environmentRecord: {},
-  };
+// Environment Record를 표현하는 객체
+let globalEnvironmentRecord = {
+  outer: null,
+  bindings: {},
+};
 
-  var LexicalEnvironment = {
-    environmentRecord: {},
-    outer: globalEnvironment,
-  };
+// 전역 LexicalEnvironment
+let globalLexicalEnvironment = {
+  environmentRecord: globalEnvironmentRecord,
+  outer: null,
+};
 
-  // 코드를 파싱하여 변수와 함수 선언을 찾는 가상의 parse 함수 -> AST를 반환
-  var parsedCode = parse(code);
-
-  // 선언 처리 먼저
-  for (let declaration of parsedCode.declarations) {
-    if (declaration.type === "VariableDeclaration") {
-      VariableEnvironment.environmentRecord[declaration.name] = "uninitialized";
-      LexicalEnvironment.environmentRecord[declaration.name] = "uninitialized";
-    }
-    if (declaration.type === "FunctionDeclaration") {
-      VariableEnvironment.environmentRecord[declaration.name] = declaration;
-      LexicalEnvironment.environmentRecord[declaration.name] = declaration;
-    }
+// 변수 선언 시 LexicalEnvironment에 바인딩 생성
+function variableDeclaration(name, environment) {
+  if (environment.environmentRecord.bindings[name]) {
+    throw new Error(`'${name}'이(가) 이미 선언되었습니다`);
   }
-
-  // 이후, 할당 처리를 하는데 TDZ를 체크하고, TDZ에 있으면 ReferenceError를 발생시킴
-  for (let statement of parsedCode.statements) {
-    if (statement.type === "Assignment") {
-      if (
-        LexicalEnvironment.environmentRecord[statement.name] === "uninitialized"
-      ) {
-        // uninitialized에서 변수를 참조하면 ReferenceError 발생
-        throw new Error(
-          `Cannot access '${statement.name}' before initialization`
-        );
-      }
-      LexicalEnvironment.environmentRecord[statement.name] = statement.value;
-    }
-  }
-
-  return {
-    code: parsedCode,
-    VariableEnvironment: VariableEnvironment,
-    LexicalEnvironment: LexicalEnvironment,
-    thisValue: undefined,
+  // TDZ 시작 (tdz: true)
+  environment.environmentRecord.bindings[name] = {
+    value: undefined,
+    tdz: true,
   };
 }
+
+// 변수에 값을 할당하는 함수
+function assignment(name, value, environment) {
+  if (environment.environmentRecord.bindings[name]?.tdz) {
+    throw new Error(`Cannot access '${name}' before initialization`);
+  }
+  environment.environmentRecord.bindings[name] = { value: value, tdz: false }; // 할당 완료 시 TDZ 종료 (tdz: false)
+}
+
+// 함수 선언 시 새로운 함수 객체 생성
+function functionDeclaration(name, func, environment) {
+  environment.environmentRecord.bindings[name] = { value: func, tdz: false }; // 함수 선언 완료 시 TDZ 종료 (tdz: false)
+  // 함수 객체에 [[Environment]] 슬롯 설정
+  func["[[Environment]]"] = environment;
+}
+
+// 함수를 호출하는 함수
+function functionInvocation(func, environment) {
+  // 새로운 LexicalEnvironment 생성
+  let newLexicalEnvironment = {
+    environmentRecord: {},
+    outer: func["[[Environment]]"],
+  };
+
+  // 여기서 함수 코드를 실행하면 됩니다
+}
+
+// 전역 코드 실행 (TDZ 구현 버전)
+functionDeclaration(
+  "foo",
+  function () {
+    variableDeclaration("a", foo["[[Environment]]"]);
+    // TDZ 체크
+    assignment("a", 1, foo["[[Environment]]"]);
+
+    variableDeclaration("b", foo["[[Environment]]"]);
+    // TDZ 체크
+    assignment("b", 2, foo["[[Environment]]"]);
+
+    functionDeclaration(
+      "c",
+      function () {
+        variableDeclaration("d", c["[[Environment]]"]);
+        // TDZ 체크
+        assignment("d", "d", c["[[Environment]]"]);
+      },
+      foo["[[Environment]]"]
+    );
+  },
+  globalLexicalEnvironment
+);
 ```
 
 ## 3. 그래도 아쉬우니 V8 조금 들여다보기
