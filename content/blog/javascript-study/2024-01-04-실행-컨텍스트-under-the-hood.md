@@ -107,6 +107,8 @@ functionDeclaration(
       function () {
         variableDeclaration("d", c["[[Environment]]"]);
         assignment("d", "d", c["[[Environment]]"]);
+
+        return "e";
       },
       foo["[[Environment]]"]
     );
@@ -238,6 +240,8 @@ functionDeclaration(
         variableDeclaration("d", c["[[Environment]]"]);
         // TDZ 체크
         assignment("d", "d", c["[[Environment]]"]);
+
+        return "e";
       },
       foo["[[Environment]]"]
     );
