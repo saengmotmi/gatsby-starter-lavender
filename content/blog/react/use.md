@@ -10,7 +10,7 @@ thumbnail: /thumbnails/hello-world.jpg
 
 Suspense는 흔히 로딩 스피너를 띄우는 용도로 많이 알려져 있다. 반은 맞고 반은 틀리다고 생각한다. 물론 그런 용례가 있기는 하지만 그게 전부는 아니다. Promise를 로딩 스피너를 표현하는 데 사용할 수 있지만 그 본질적인 의미는 '비동기 상황을 값으로 다루는 것'에 있다. Suspense는 컴포넌트의 비동기 상황을 React에서 일급으로 지원하는 것이 핵심이며, 비동기 렌더링에 대한 구간별 경계를 긋기 위한 기능이라고도 소개할 수 있겠다.
 
-Streaming SSR(React Fizz)을 생각해보자. 서버 측에서 로딩 중인 데이터를 모두 기다리지 않고 일부 데이터만 먼저 응답하도록 한다. 어디부터 어디까지를 기다릴 것인가? 당연하게도 Suspense가 그 경계가 되어준다. 자세한 건 RSC의 스트리밍에 대해 다루는 글을 참고하자.
+Streaming SSR(React Fizz)을 생각해보자. 서버 측에서 로딩 중인 데이터를 모두 기다리지 않고 일부 데이터만 먼저 응답하도록 한다. 어디부터 어디까지를 기다릴 것인가? 당연하게도 Suspense가 그 경계가 되어준다. 자세한 건 RSC의 [스트리밍에 대해 다루는 글](https://oj8mm.notion.site/Static-SSR-vs-Streaming-SSR-a41c2aa07ac44cc28250c7b6d611e582)을 참고하자.
 
 이야기가 좀 샜는데, 마치 이러한 오해들 처럼 Suspense를 트리거 하는 방법은 React Query나 SWR 같은 fetcher 라이브러리의 `suspense: true` 옵션 같은 걸로만 트리거 가능하다고 생각하는 사람들이 적지 않다.
 
