@@ -114,4 +114,4 @@ const pendingPromise = () => new Promise(() => {});
 
 2023년도 FeConf 발표였던 [use 훅이 바꿀 리액트 비동기 처리의 미래 맛보기](https://www.youtube.com/watch?v=Hd1JeePasuw&ab_channel=FEConfKorea) 가장 끝 부분에 언급되는데 `use()` 가 최적화 컴파일러인 React Forget에 의해 당초 제안되었던 것보다 운신의 폭이 다소 줄어들 수 있을 것으로 보인다.
 
-공식 문서에서도 언급된 만큼 조건부로 동작하는 것 자체는 유지될 것으로 보이나, 그 외에 일반 함수 내부나 `Array.prototype.map`의 인자로 넘겨지는 iteratee 함수 내부 같은 곳에서는 쓰일 수 있으므로 이 점은 유의해야 할 것 같다.
+공식 문서에서도 언급된 만큼 조건부로 동작하는 것 자체는 유지될 것으로 보이나, 그 외에 일반 함수 내부나 `Array.prototype.map`의 인자로 넘겨지는 iteratee 함수 내부 같은 곳에서 사용하는 건 불가능해질 수 있으므로 이 점은 유의해야 할 것 같다.
