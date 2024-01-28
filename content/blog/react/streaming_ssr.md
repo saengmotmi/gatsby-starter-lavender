@@ -46,11 +46,15 @@ https://www.builder.io/blog/visualizing-nodejs-close-queue
 
 ```jsx
 const App = ({ data }) => {
+  가상의_무거운_연산(data);
+
 	return // ...
 }
 
 export const getServerSideProps = async () => {
-	await sleep(10_000); // 10 seconds
+  fs.readFile('data.json', (err, data) => {
+    // 가상의 무거운 연산
+  })
   return { ... }
 }
 ```
@@ -61,7 +65,15 @@ export const getServerSideProps = async () => {
 
 애석하게도 사실입니다. 실제로 2017년 Next.js issue에 SSR에 대한 제한된 동시성 성능 이슈(https://github.com/vercel/next.js/issues/1840) 가 보고된 적이 있습니다.
 
-여러 대의 SSR 인스턴스를 띄우거나, 응답을 캐싱하라는 등의 해결책을 내놓긴 했지만 근본적인 문제이자 한계는 renderToString이 동기 함수라는 점에 있습니다. 물론 이것만이 동시성 성능 문제의 전부는 아니지만 구조적인 문제인 만큼 해결될 필요가 있었습니다.
+동기 함수가 Node.js 런타임 환경에 부하를 줄 수 있는 이유에 대해 잘 이해하려면 싱글 스레드 환경의 콜스택과 이벤트 루프에 대해 잘 이해해야 하는데... 간단히 요약하자면 아래와 같다.
+
+- Node.js에서 http 모듈로 서버를 띄웠을 때 n개의 요청이 들어올 경우 다른 요청을 대단히 방해하지는 않는다.
+
+- 왜냐하면 비동기 처리는 이벤트 루프(libuv)로 넘겨져 자바스크립트 런타임의 메인 스레드 이외의 영역에서 처리된 다음, 동기로 실행 가능한 부분만 다시 메인 스레드의 콜스택으로 넘겨져 처리되기 때문이다.
+
+- 그런데 `renderToString()`은 동기 함수이기 때문에 메인 스레드에서 처리된다. 콜스택 내에서 실행될 때 많은 시간을 소모할 가능성이 높기 때문에 동시에 많은 요청이 몰리면 메인 스레드를 블락하게 될 수 있다.
+
+이러한 이유로 해당 이슈에서는 여러 대의 SSR 인스턴스를 띄우거나, 응답을 캐싱하라는 등의 해결책이 언급되기는 했지만 근본적인 문제이자 한계는 renderToString이 동기 함수라는 점에 있습니다. 물론 이것만이 동시성 성능 문제의 전부는 아니지만 구조적인 문제인 만큼 해결될 필요가 있었습니다.
 
 이윽고 React의 Concurrent Feature를 본격적으로 반영한 새로운 메이저 업데이트 ver. 18은 이에 대해 **1) Streaming SSR**과 **2) 선택적 Hydration**이라는 두 가지 해결책을 내놓습니다. (https://github.com/reactwg/react-18/discussions/37)
 
