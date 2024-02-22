@@ -68,7 +68,7 @@ thumbnail: /thumbnails/hello-world.jpg
 
 뒤어 이어지는 ‘서버 중심 MPA의 단순한 'Request / Response' 멘탈 모델과 클라이언트 중심 SPA의 원활한 상호 작용을 결합하여 두 가지 장점을 모두 제공’한다는 문장은 이 1, 2, 3, 4를 한번 묶은 설명인 만큼, 이 부분에 조금 더 집중해보는 것도 좋겠다. 기존 클라이언트 중심의 멘탈 모델만을 가지고 있던 리액트에 서버 중심적인 멘탈 모델이 추가된다는 점을 명확히 하고 있다는데 의의를 둘 수 있겠다.
 
-### 1-3) react/rfcs (**RFC: React Server Components)**
+### 1-3) react/rfcs (RFC: React Server Components)
 
 이번엔 두 글에서 모두 언급된 react/rfcs 의 [RSC 관련 문서](https://github.com/reactjs/rfcs/blob/main/text/0188-server-components.md#summary)를 참고해볼 차례다. 원문과 함께 싣고 싶었지만 분량 상 번역본만 실어본다.
 
@@ -104,7 +104,7 @@ thumbnail: /thumbnails/hello-world.jpg
 
 - 서버와 클라이언트 간에 코드를 공유하여 하나의 컴포넌트로 정적 버전과 동적 버전을 한번에 작성할 수 있다(← 이 부분은 이해가 좀 어려울 수 있는데 RFC의 Basic Example을 참고) 라는 점이 언급된다.
 
-### 1-4) Next.js Docs (**Server Components)**
+### 1-4) Next.js Docs (Server Components)
 
 현재 유일하게 프레임워크 내에 RSC에 대한 통합 기능을 제공하는 Next.js의 문서를 빼놓을 수 없다.
 
@@ -517,7 +517,7 @@ RSC의 관련 구현이 라우터와 함께 결합되어 있는 지점도 중요
 
 ![alt text](image-7.png)
 
-### 2-3) **RSC From Scratch. Part 1: Server Components** (Dan Abramov)
+### 2-3) RSC From Scratch. Part 1: Server Components (Dan Abramov)
 
 위에서 설명한 내용으로 RSC 관련한 거의 대부분의 내용을 전달했지만 마지막 블랙박스 하나만 더 열어보려고 한다. RSC 데모 코드에서 `/react?` 로 표현되었던 정체불명의 엔드포인트에 대한 내용이다.
 
