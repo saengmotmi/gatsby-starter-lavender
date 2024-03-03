@@ -166,7 +166,7 @@ function recoverFromConcurrentError(
 
 하지만 이러한 마법이 어떻게 가능한 것일까? 원리는 생각보다 간단했다.
 
-- 1. 웹팩 플러그인을 사용하여 번들에 코드를 삽입한다. 이 코드는 `hydration-overlay-initializer.js` 라는 파일이고, 클라이언트 측에서 실행될 때 몇 가지 초기화 동작들을 한다.
+- 웹팩 플러그인을 사용하여 번들에 코드를 삽입한다. 이 코드는 `hydration-overlay-initializer.js` 라는 파일이고, 클라이언트 측에서 실행될 때 몇 가지 초기화 동작들을 한다.
 
   ```jsx
   window.BUILDER_HYDRATION_OVERLAY = {};
@@ -201,7 +201,7 @@ function recoverFromConcurrentError(
   }
   ```
 
-- 2. 클라이언트 측 렌더링이 진행된다. 하이드레이션 오버레이 컴포넌트가 마운트 된다
+- 클라이언트 측 렌더링이 진행된다. 하이드레이션 오버레이 컴포넌트가 마운트 된다
 
   ```jsx
   export function HydrationOverlay(props: PropsWithChildren) {
@@ -214,7 +214,7 @@ function recoverFromConcurrentError(
   }
   ```
 
-- 3. 오버레이 컴포넌트는 1단계에서 등록해둔 이벤트 리스너를 통해 전역 객체에 SSR과 CSR 타이밍에 대한 innerHTML이 등록되었는지 확인하고 `beautify`, `react-diff-viewer` 라는 라이브러리를 사용해 diff가 생긴 지점을 렌더링하고 이를 모달 안에 심어 띄워준다.
+- 오버레이 컴포넌트는 1단계에서 등록해둔 이벤트 리스너를 통해 전역 객체에 SSR과 CSR 타이밍에 대한 innerHTML이 등록되었는지 확인하고 `beautify`, `react-diff-viewer` 라는 라이브러리를 사용해 diff가 생긴 지점을 렌더링하고 이를 모달 안에 심어 띄워준다.
 
   ```jsx
   useEffect(() => {
