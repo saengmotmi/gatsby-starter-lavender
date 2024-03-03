@@ -1,5 +1,5 @@
 ---
-title: 2024-03-03 더 나은 Hydration Overlay를 위한 여정
+title: 2024-03-03 더 나은 Hydration Error Overlay를 위한 여정
 date: 2024-03-03
 description: Hydration이 무엇이며, 관련 에러를 표시하는 방법이 어떻게 발전하고 있는지 알아봤습니다
 tags: [React, Nextjs, Development, Hydration]
