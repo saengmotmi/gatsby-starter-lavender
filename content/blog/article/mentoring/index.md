@@ -1,5 +1,5 @@
 ---
-title: [A는 B] 2. 멘토링이란?
+title: 2024-04-06 [A는 B] 2. 멘토링이란?
 date: 2024-04-06
 description: 나의 시작이자 끝이 될 멘토링에 대해 생각해보기
 tags: [Article]
