@@ -1,6 +1,6 @@
 ---
 title: 2024-06-06 컴파일러 스터디 회고 (23.11 ~ 24.03)
-date: 2024-04-28
+date: 2024-06-06
 description: 컴파일러를 공부하세요
 tags: [Article]
 thumbnail: /thumbnails/hello-world.jpg
