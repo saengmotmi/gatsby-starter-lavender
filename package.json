@@ -10,7 +10,10 @@
     "generate:content": "node ./scripts/generate-content.mjs",
     "dev": "yarn generate:content && react-router dev",
     "build": "yarn generate:content && react-router build",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "lint-staged": "lint-staged",
+    "husky:install": "husky",
+    "postinstall": "node ./scripts/setup-husky.mjs"
   },
   "dependencies": {
     "@react-router/node": "7.13.0",
@@ -38,6 +41,8 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vanilla-extract/vite-plugin": "^5.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "typescript": "^5.9.3",
     "vite": "^6.4.1",
     "vite-tsconfig-paths": "^5.1.4"
