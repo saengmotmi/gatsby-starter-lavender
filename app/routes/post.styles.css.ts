@@ -67,42 +67,6 @@ export const articleMetadata = style({
   transition: `color ${vars.transitions.transitionDuration} ${vars.transitions.transitionTiming}`,
 });
 
-export const controls = style({
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "0.5rem",
-  marginTop: "0.75rem",
-});
-
-export const controlButton = style({
-  border: `1px solid ${vars.colors.borderGray}`,
-  borderRadius: "999px",
-  padding: "0.3rem 0.75rem",
-  color: vars.colors.text400,
-  backgroundColor: vars.colors.backgroundColor,
-  fontSize: "0.8125rem",
-  cursor: "pointer",
-  transition: `color ${vars.transitions.transitionDuration} ${vars.transitions.transitionTiming}, border-color ${vars.transitions.transitionDuration} ${vars.transitions.transitionTiming}, background-color ${vars.transitions.transitionDuration} ${vars.transitions.transitionTiming}`,
-});
-
-globalStyle(`${controlButton}:hover`, {
-  borderColor: vars.colors.borderPrimary,
-  color: vars.colors.link,
-});
-
-globalStyle(`${controlButton}[aria-pressed="true"]`, {
-  borderColor: vars.colors.borderPrimary,
-  color: vars.colors.link,
-  backgroundColor: vars.colors.titleFilterBackground,
-});
-
-export const pending = style({
-  display: "inline-flex",
-  alignItems: "center",
-  color: vars.colors.text200,
-  fontSize: "0.8125rem",
-});
-
 export const content = style({
   wordBreak: "keep-all",
 });
