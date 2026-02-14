@@ -7,9 +7,10 @@ const branch = "main";
 
 interface Props {
   repo: string;
+  pathname: string;
 }
 
-const Utterances = ({ repo }: Props) => {
+const Utterances = ({ repo, pathname }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [darkMode] = useDarkMode();
@@ -25,7 +26,7 @@ const Utterances = ({ repo }: Props) => {
       label: "comment",
       async: "true",
       crossorigin: "anonymous",
-      "issue-term": "pathname",
+      "issue-term": pathname,
     };
 
     Object.entries(config).forEach(([key, value]) => {
@@ -38,7 +39,7 @@ const Utterances = ({ repo }: Props) => {
 
     ref.current.innerHTML = "";
     ref.current.appendChild(utterances);
-  }, [repo, utteranceTheme]);
+  }, [repo, pathname, utteranceTheme]);
 
   return <div className="utterances" ref={ref} />;
 };
