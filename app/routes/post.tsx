@@ -40,19 +40,52 @@ export function meta({ data }: Route.MetaArgs) {
   const { post } = data;
   const title = post.title;
   const description = post.description || post.excerpt;
+  const url = `${siteConfig.siteUrl}${post.path}`;
+  const canonicalUrl = url.endsWith("/") ? url : `${url}/`;
   const imagePath = post.thumbnail || siteConfig.thumbnail;
   const image = `${siteConfig.siteUrl}${imagePath}`;
+  const twitter = siteConfig.social.twitter?.trim();
+  const twitterHandle = twitter ? (twitter.startsWith("@") ? twitter : `@${twitter}`) : null;
+  const publishedAt = new Date(post.date);
+  const publishedAtIso = Number.isNaN(publishedAt.getTime()) ? null : publishedAt.toISOString();
 
-  return [
+  const meta = [
     { title },
     { name: "description", content: description },
+    { name: "author", content: siteConfig.author },
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "article" },
-    { property: "og:url", content: `${siteConfig.siteUrl}${post.path}` },
+    { property: "og:url", content: url },
+    { property: "og:site_name", content: siteConfig.title },
+    { property: "og:locale", content: "ko_KR" },
     { property: "og:image", content: image },
+    { property: "og:image:secure_url", content: image },
+    { property: "og:image:alt", content: title },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
     { name: "twitter:image", content: image },
+    { name: "twitter:url", content: url },
+    { tagName: "link", rel: "canonical", href: canonicalUrl },
   ];
+
+  if (publishedAtIso) {
+    meta.push({ property: "article:published_time", content: publishedAtIso });
+  }
+
+  meta.push({ property: "article:author", content: siteConfig.author });
+
+  for (const tag of post.tags) {
+    meta.push({ property: "article:tag", content: tag });
+  }
+
+  if (twitterHandle) {
+    meta.push({ name: "twitter:creator", content: twitterHandle });
+    meta.push({ name: "twitter:site", content: twitterHandle });
+  }
+
+  return meta;
 }
 
 export default function PostRoute({ loaderData }: Route.ComponentProps) {

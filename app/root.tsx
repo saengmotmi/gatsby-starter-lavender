@@ -16,6 +16,14 @@ import "~/fonts/Pretendard/pretendard.css";
 import "~/prism/prism-vsc-dark-plus.css";
 import "katex/dist/katex.min.css";
 
+export function links() {
+  return [
+    { rel: "icon", type: "image/png", href: "/thumbnails/main-github.png" },
+    { rel: "apple-touch-icon", href: "/thumbnails/main-github.png" },
+    { rel: "shortcut icon", href: "/thumbnails/main-github.png" },
+  ];
+}
+
 export function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
