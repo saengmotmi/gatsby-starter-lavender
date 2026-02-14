@@ -4,3 +4,35 @@
 
 [build.environment]
   NODE_VERSION = "24"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    "Netlify-CDN-Cache-Control" = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/content/blog/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+    "Netlify-CDN-Cache-Control" = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.data"
+  [headers.values]
+    Cache-Control = "public, max-age=60, stale-while-revalidate=300"
+    "Netlify-CDN-Cache-Control" = "public, max-age=1800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    "Netlify-CDN-Cache-Control" = "public, max-age=300, stale-while-revalidate=86400"
