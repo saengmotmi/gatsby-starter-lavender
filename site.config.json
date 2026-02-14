@@ -1,0 +1,18 @@
+{
+  "title": "saengmotmi's blog",
+  "author": "saengmotmi",
+  "description": "'내가 원하는 건 문학이 아닌 기쁨이다.'",
+  "siteUrl": "https://saengmotmi.netlify.app",
+  "thumbnail": "/thumbnails/main.png",
+  "social": {
+    "github": "saengmotmi",
+    "twitter": "",
+    "facebook": "",
+    "linkedin": "",
+    "instagram": ""
+  },
+  "comment": {
+    "utterances": "saengmotmi/gatsby-starter-lavender",
+    "disqusShortName": ""
+  }
+}
