@@ -11,6 +11,7 @@
     "dev": "yarn generate:content && react-router dev",
     "build": "yarn generate:content && react-router build",
     "typecheck": "react-router typegen && tsc",
+    "verify": "yarn typecheck && yarn build",
     "lint-staged": "lint-staged",
     "husky:install": "husky",
     "postinstall": "node ./scripts/setup-husky.mjs"
@@ -47,7 +48,7 @@
     "vite": "^6.4.1",
     "vite-tsconfig-paths": "^5.1.4"
   },
-  "packageManager": "yarn@1.22.22",
+  "packageManager": "yarn@4.12.0",
   "engines": {
     "node": ">=24.0.0 <25",
     "yarn": ">=4.0.0"

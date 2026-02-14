@@ -1,39 +1,48 @@
-# Lavender Blog (React Router v7)
+# Lavender Blog
 
-Gatsby 기반 스타터를 **React Router v7 Framework Mode + Vite SSG**로 마이그레이션한 정적 블로그입니다.
+Gatsby 기반 스타터를 React Router v7 Framework Mode + Vite SSG로 마이그레이션한 정적 블로그입니다.
 
-## Stack
+## Runtime Contract
 
-- React Router Framework Mode (`react-router` + `@react-router/dev`)
-- Vite
-- Markdown pipeline (`gray-matter`, `remark`, `rehype`)
-- Build-time pre-render (`react-router.config.ts`)
+- Node: `24.x` (`.nvmrc`)
+- Yarn: `4.12.0` (`packageManager`, `.yarn/releases/yarn-4.12.0.cjs`)
+- Install policy: `yarn install --immutable`
 
-## Requirements
+로컬, CI, Netlify 모두 같은 계약을 따릅니다. 버전 정보는 반드시 위 3개 파일 기준으로 함께 수정합니다.
 
-- Node `24.x` (LTS)
-- Yarn `4.x` (`.yarn/releases/yarn-4.12.0.cjs` vendoring)
-
-## Scripts
+## Quick Start
 
 ```bash
-yarn dev          # 콘텐츠 생성 + 개발 서버
-yarn build        # 콘텐츠 생성 + 정적 빌드
-yarn typecheck    # route typegen + tsc
+corepack yarn install --immutable
+corepack yarn dev
 ```
 
-## Content Source
+## Commands
 
-- Markdown: `content/blog/**/*.md`
-- 정적 에셋: `static/`
+```bash
+yarn dev        # 콘텐츠 생성 + 개발 서버
+yarn build      # 콘텐츠 생성 + 정적 빌드
+yarn typecheck  # route typegen + tsc
+yarn verify     # typecheck + build
+```
 
-빌드 전에 `scripts/generate-content.mjs`가 실행되어 다음을 생성합니다.
+## Build/Data Flow
 
-- `app/generated/posts.json`
-- `public/content/blog/**/*` (이미지 등)
-- `public/rss.xml`
+- Content source: `content/blog/**/*.md`
+- Static assets: `static/`
+- Build data generator: `scripts/generate-content.mjs`
+- Generated artifacts:
+  - `app/generated/posts.json`
+  - `public/content/blog/**/*`
+  - `public/rss.xml`
 
 ## Routes
 
-- `/` : 포스트 목록 + 검색/태그 필터
-- `/:category/:slug` : 포스트 상세
+- `/`: 포스트 목록 + 검색/태그 필터
+- `/:category/:slug`: 포스트 상세
+
+## Maintenance Docs
+
+- 기여 가이드: `CONTRIBUTING.md`
+- 아키텍처: `docs/architecture.md`
+- 결정 기록(ADR): `docs/adr/0001-runtime-and-build-contract.md`
