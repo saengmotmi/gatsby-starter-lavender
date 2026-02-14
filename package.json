@@ -8,10 +8,10 @@
   "type": "module",
   "scripts": {
     "generate:content": "node ./scripts/generate-content.mjs",
-    "dev": "npm run generate:content && react-router dev",
-    "build": "npm run generate:content && react-router build",
-    "typecheck": "npm run generate:content && react-router typegen && tsc",
-    "verify": "npm run typecheck && npm run build",
+    "dev": "node ./scripts/generate-content.mjs && react-router dev",
+    "build": "node ./scripts/generate-content.mjs && react-router build",
+    "typecheck": "node ./scripts/generate-content.mjs && react-router typegen && tsc",
+    "verify": "node ./scripts/generate-content.mjs && react-router typegen && tsc && node ./scripts/generate-content.mjs && react-router build",
     "lint-staged": "lint-staged",
     "husky:install": "husky",
     "postinstall": "node ./scripts/setup-husky.mjs"
