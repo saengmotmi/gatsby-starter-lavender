@@ -13,3 +13,5 @@ export type Post = {
   html: string;
   tableOfContents: string;
 };
+
+export type PostSummary = Omit<Post, "html" | "tableOfContents">;

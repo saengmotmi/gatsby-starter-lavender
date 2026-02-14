@@ -304,9 +304,15 @@ async function main() {
   }
 
   posts.sort((a, b) => b.date.localeCompare(a.date));
+  const postSummaries = posts.map(({ html, tableOfContents, ...summary }) => summary);
 
   await fs.mkdir(GENERATED_DIR, { recursive: true });
   await fs.writeFile(path.join(GENERATED_DIR, "posts.json"), `${JSON.stringify(posts, null, 2)}\n`, "utf8");
+  await fs.writeFile(
+    path.join(GENERATED_DIR, "post-summaries.json"),
+    `${JSON.stringify(postSummaries, null, 2)}\n`,
+    "utf8"
+  );
 
   await copyDir(STATIC_DIR, PUBLIC_DIR);
   await copyDir(BLOG_DIR, PUBLIC_BLOG_ASSET_DIR, (filePath) => !filePath.toLowerCase().endsWith(".md"));

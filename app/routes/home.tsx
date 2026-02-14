@@ -1,10 +1,11 @@
 import { useCallback, useRef } from "react";
+import { useLoaderData } from "react-router";
 
 import ArticleList from "~/components/ArticleList";
 import Profile from "~/components/Profile";
 import { useInfiniteScroll } from "~/hooks/useInfiniteScroll";
 import { usePage } from "~/hooks/usePage";
-import { allPosts } from "~/lib/posts";
+import { allPostSummaries } from "~/lib/post-summaries";
 import siteConfig from "~/lib/site-config";
 import Layout from "~/layout";
 
@@ -48,10 +49,16 @@ export function meta() {
   return meta;
 }
 
+export function loader() {
+  return {
+    posts: allPostSummaries,
+  };
+}
+
 export default function Home() {
   const infiniteScrollRef = useRef<HTMLDivElement | null>(null);
   const [page, setPage] = usePage();
-  const posts = allPosts;
+  const { posts } = useLoaderData<typeof loader>();
 
   const totalPage = Math.max(1, Math.ceil(posts.length / articlePerPage));
 

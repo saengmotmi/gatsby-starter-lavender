@@ -1,12 +1,12 @@
 import { memo } from "react";
 
-import type { Post } from "~/lib/post-types";
+import type { PostSummary } from "~/lib/post-types";
 import ArticleListItem from "~/components/ArticleList/Item";
 
 import * as styles from "./styles.css";
 
 interface Props {
-  posts: Post[];
+  posts: PostSummary[];
 }
 
 const ArticleList = ({ posts }: Props) => {
