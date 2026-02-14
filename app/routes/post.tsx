@@ -116,7 +116,7 @@ export default function PostRoute({ loaderData }: Route.ComponentProps) {
         </footer>
       </article>
 
-      {commentConfig?.utterances ? <Utterances repo={commentConfig.utterances} /> : null}
+      {commentConfig?.utterances ? <Utterances repo={commentConfig.utterances} pathname={post.path} /> : null}
 
       <ArticleNavigator previousArticle={previousPost} nextArticle={nextPost} />
     </Layout>
