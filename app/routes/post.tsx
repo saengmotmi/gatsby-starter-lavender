@@ -1,3 +1,5 @@
+import { Activity, useEffect, useState, useTransition } from "react";
+
 import ArticleNavigator from "~/components/ArticleNavigator";
 import Profile from "~/components/Profile";
 import Tags from "~/components/Tags";
@@ -91,6 +93,41 @@ export function meta({ data }: Route.MetaArgs) {
 export default function PostRoute({ loaderData }: Route.ComponentProps) {
   const { post, previousPost, nextPost } = loaderData;
   const commentConfig = siteConfig.comment;
+  const [isPending, startTransition] = useTransition();
+  const [isTableOfContentsVisible, setIsTableOfContentsVisible] = useState(Boolean(post.tableOfContents));
+  const [isCommentsVisible, setIsCommentsVisible] = useState(false);
+  const [hasLoadedComments, setHasLoadedComments] = useState(false);
+  const hasComments = Boolean(commentConfig?.utterances);
+
+  useEffect(() => {
+    setIsTableOfContentsVisible(Boolean(post.tableOfContents));
+    setIsCommentsVisible(false);
+    setHasLoadedComments(false);
+  }, [post.path, post.tableOfContents]);
+
+  const onToggleTableOfContents = () => {
+    if (!post.tableOfContents) {
+      return;
+    }
+
+    startTransition(() => {
+      setIsTableOfContentsVisible((visible) => !visible);
+    });
+  };
+
+  const onToggleComments = () => {
+    if (!hasComments) {
+      return;
+    }
+
+    if (!isCommentsVisible) {
+      setHasLoadedComments(true);
+    }
+
+    startTransition(() => {
+      setIsCommentsVisible((visible) => !visible);
+    });
+  };
 
   return (
     <Layout title={siteConfig.title}>
@@ -103,10 +140,39 @@ export default function PostRoute({ loaderData }: Route.ComponentProps) {
             <span>{post.date}</span>
             <Tags tags={post.tags} />
           </div>
+          <div className={styles.controls}>
+            {post.tableOfContents ? (
+              <button
+                type="button"
+                className={styles.controlButton}
+                onClick={onToggleTableOfContents}
+                aria-pressed={isTableOfContentsVisible}
+              >
+                {isTableOfContentsVisible ? "목차 숨기기" : "목차 보기"}
+              </button>
+            ) : null}
+            {hasComments ? (
+              <button
+                type="button"
+                className={styles.controlButton}
+                onClick={onToggleComments}
+                aria-pressed={isCommentsVisible}
+              >
+                {isCommentsVisible ? "댓글 숨기기" : "댓글 보기"}
+              </button>
+            ) : null}
+            {isPending ? <span className={styles.pending}>전환 중...</span> : null}
+          </div>
         </header>
 
         {post.tableOfContents ? (
-          <div className={styles.tableOfContents} dangerouslySetInnerHTML={{ __html: post.tableOfContents }} />
+          <Activity mode={isTableOfContentsVisible ? "visible" : "hidden"} name="post-table-of-contents">
+            <div
+              className={styles.tableOfContents}
+              hidden={!isTableOfContentsVisible}
+              dangerouslySetInnerHTML={{ __html: post.tableOfContents }}
+            />
+          </Activity>
         ) : null}
 
         <section className={styles.content} dangerouslySetInnerHTML={{ __html: post.html }} itemProp="articleBody" />
@@ -116,7 +182,13 @@ export default function PostRoute({ loaderData }: Route.ComponentProps) {
         </footer>
       </article>
 
-      {commentConfig?.utterances ? <Utterances repo={commentConfig.utterances} /> : null}
+      {commentConfig?.utterances && hasLoadedComments ? (
+        <Activity mode={isCommentsVisible ? "visible" : "hidden"} name="post-comments">
+          <div hidden={!isCommentsVisible}>
+            <Utterances repo={commentConfig.utterances} />
+          </div>
+        </Activity>
+      ) : null}
 
       <ArticleNavigator previousArticle={previousPost} nextArticle={nextPost} />
     </Layout>
