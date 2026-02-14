@@ -6,7 +6,7 @@ tags: [Article]
 thumbnail: /thumbnails/hello-world.jpg
 ---
 
-> 💡 올해 6월, Toss Frontend Accelerator 교육 코스를 만드는 과정에서 작성했던 글입니다. 윤문하여 기술 블로그로 옮겼습니다.
+> 💡 2025년 6월, Toss Frontend Accelerator 교육 코스를 만드는 과정에서 작성했던 글입니다. 윤문하여 기술 블로그로 옮겼습니다.
 
 ## 탁월함을 향하여
 

@@ -16,6 +16,16 @@ thumbnail: /thumbnails/hello-world.jpg
 
 - [2024-11-01 React Router v7, Static Prerendering?](https://saengmotmi.netlify.app/react/rrv7-static-prerendering/)
 
+> 💡 **정정 및 보완 안내**
+>
+> 아래 문장은 예전 글에서 `Fizz`와 `Flight`를 엄밀히 구분하지 못했던 표현이다.
+>
+> > "그래도 이렇게 만들어진 HTML 청크와 앱 실행에 필요한 자바스크립트 번들이 함께 클라이언트에 전송되고 하이드레이션까지 일어나고 나면 정상적인 SPA 앱의 모양을 갖추게 된다. 이 청크는 기존의 renderToString을 대체하는 react-dom/server 의 `renderToPipeableStream`에 의해 스트리밍 형태로 전송된다."
+> >
+> > — [2024-02-23 \[A는 B\] 1. RSC란?](https://saengmotmi.netlify.app/react/what-is-rsc/)
+>
+> `Fizz(HTML 스트리밍)`와 `Flight(RSC Payload 스트리밍)`의 구분은 이 글의 [2. Fizz와 Flight, 개념 세우기](#2-fizz와-flight-개념-세우기)에서 더 정확하게 정리했다.
+
 하지만 그간 주변으로부터 들어온 RSC 관련한 질문에 답해주면서도 그랬고, 가장 최근에 작성한 포스팅을 곰곰 되짚어보면서도 이상하게 설명이 막히는 부분이 느껴졌다. 예를 들면 이런 질문들이다.
 
 - RSC와 Streaming SSR을 어떻게 구분해야 하나?
