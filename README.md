@@ -11,8 +11,8 @@ Gatsby 기반 스타터를 **React Router v7 Framework Mode + Vite SSG**로 마�
 
 ## Requirements
 
-- Node `>=25.0.0` (Node 25 권장)
-- Yarn `>=4`
+- Node `24.x` (LTS)
+- Yarn `4.x` (`.yarn/releases/yarn-4.12.0.cjs` vendoring)
 
 ## Scripts
 
