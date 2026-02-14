@@ -2,9 +2,7 @@ name: CI
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   verify:
@@ -27,3 +25,9 @@ jobs:
 
       - name: Validate RSS output
         run: test -s build/client/rss.xml
+
+      - name: Install Playwright Chromium
+        run: corepack yarn playwright install --with-deps chromium
+
+      - name: Verify scroll restoration regression
+        run: corepack yarn test:e2e:scroll

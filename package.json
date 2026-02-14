@@ -11,6 +11,8 @@
     "dev": "node ./scripts/generate-content.mjs && react-router dev",
     "build": "node ./scripts/generate-content.mjs && react-router build",
     "typecheck": "node ./scripts/generate-content.mjs && react-router typegen && tsc",
+    "test:e2e": "playwright test",
+    "test:e2e:scroll": "playwright test tests/e2e/scroll-restoration.spec.ts",
     "verify": "node ./scripts/generate-content.mjs && react-router typegen && tsc && node ./scripts/generate-content.mjs && react-router build",
     "lint-staged": "lint-staged",
     "husky:install": "husky",
@@ -37,6 +39,7 @@
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.50.1",
     "@react-router/dev": "7.13.0",
     "@types/node": "^22.13.10",
     "@types/react": "^19.2.2",
