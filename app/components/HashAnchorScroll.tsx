@@ -1,7 +1,5 @@
 import { useEffect } from "react";
-
-const getLocationKey = (location: Pick<Location, "pathname" | "search" | "hash">) =>
-  `${location.pathname}${location.search}${location.hash}`;
+import { useLocation } from "react-router";
 
 const decodeHashId = (rawHash: string) => {
   const rawId = rawHash.slice(1);
@@ -36,71 +34,27 @@ const scrollToHashTarget = (retries = 6) => {
 };
 
 export default function HashAnchorScroll() {
+  const { hash } = useLocation();
+
   useEffect(() => {
-    const inPageScrollPositions = new Map<string, number>();
+    if (!hash) {
+      return;
+    }
 
-    const rememberCurrentPosition = () => {
-      inPageScrollPositions.set(getLocationKey(window.location), window.scrollY);
-    };
+    let firstFrame = 0;
+    let secondFrame = 0;
 
-    const restoreAfterNavigation = () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (window.location.hash) {
-            scrollToHashTarget();
-            return;
-          }
-
-          const savedY = inPageScrollPositions.get(getLocationKey(window.location));
-          if (typeof savedY === "number") {
-            window.scrollTo(0, savedY);
-          }
-        });
+    firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        scrollToHashTarget();
       });
-    };
-
-    const handleAnchorIntent = (event: MouseEvent) => {
-      if (event.defaultPrevented) {
-        return;
-      }
-
-      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-        return;
-      }
-
-      const target = event.target;
-      if (!(target instanceof Element)) {
-        return;
-      }
-
-      const anchor = target.closest("a[href]");
-      if (!(anchor instanceof HTMLAnchorElement)) {
-        return;
-      }
-
-      const href = anchor.getAttribute("href");
-      if (!href?.startsWith("#")) {
-        return;
-      }
-
-      rememberCurrentPosition();
-    };
-
-    rememberCurrentPosition();
-    restoreAfterNavigation();
-
-    document.addEventListener("click", handleAnchorIntent, true);
-    window.addEventListener("hashchange", restoreAfterNavigation);
-    window.addEventListener("popstate", restoreAfterNavigation);
-    window.addEventListener("pagehide", rememberCurrentPosition);
+    });
 
     return () => {
-      document.removeEventListener("click", handleAnchorIntent, true);
-      window.removeEventListener("hashchange", restoreAfterNavigation);
-      window.removeEventListener("popstate", restoreAfterNavigation);
-      window.removeEventListener("pagehide", rememberCurrentPosition);
+      cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
     };
-  }, []);
+  }, [hash]);
 
   return null;
 }
