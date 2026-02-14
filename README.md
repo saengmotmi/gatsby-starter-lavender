@@ -46,3 +46,10 @@ yarn verify     # typecheck + build
 - 기여 가이드: `CONTRIBUTING.md`
 - 아키텍처: `docs/architecture.md`
 - 결정 기록(ADR): `docs/adr/0001-runtime-and-build-contract.md`
+- UX 체크리스트: `docs/ux-checklist.md`
+- 프로덕션 점검 리포트: `docs/reviews/production-2026-02-15.md`
+
+## Testbed Policy
+
+이 저장소는 프로덕션 블로그의 SSG 사용성/성능 기준을 검증하고 학습하기 위한 테스트베드입니다.
+신규 변경은 `docs/ux-checklist.md` 기준으로 검토하고, 미충족 항목은 이슈로 추적합니다.
