@@ -18,6 +18,27 @@ import "katex/dist/katex.min.css";
 
 export function links() {
   return [
+    {
+      rel: "preload",
+      href: "/assets/Pretendard-Regular-BleH6oJ0.woff2",
+      as: "font",
+      type: "font/woff2",
+      crossOrigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      href: "/assets/Pretendard-Bold-BDestNM2.woff2",
+      as: "font",
+      type: "font/woff2",
+      crossOrigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      href: "/assets/Pretendard-Black-DSUTIcIc.woff2",
+      as: "font",
+      type: "font/woff2",
+      crossOrigin: "anonymous",
+    },
     { rel: "icon", type: "image/png", href: "/thumbnails/main-github.png" },
     { rel: "apple-touch-icon", href: "/thumbnails/main-github.png" },
     { rel: "shortcut icon", href: "/thumbnails/main-github.png" },
