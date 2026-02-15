@@ -2,7 +2,7 @@
   font-family: "Pretendard";
   font-style: normal;
   font-weight: 400;
-  font-display: optional;
+  font-display: swap;
   src: local("Pretendard Regular"), url("./woff2/Pretendard-Regular.woff2") format("woff2");
 }
 
@@ -10,7 +10,7 @@
   font-family: "Pretendard";
   font-style: normal;
   font-weight: 700;
-  font-display: optional;
+  font-display: swap;
   src: local("Pretendard Bold"), url("./woff2/Pretendard-Bold.woff2") format("woff2");
 }
 
@@ -18,6 +18,6 @@
   font-family: "Pretendard";
   font-style: normal;
   font-weight: 900;
-  font-display: optional;
-  src: local("Pretendard Bold"), url("./woff2/Pretendard-Bold.woff2") format("woff2");
+  font-display: swap;
+  src: local("Pretendard Black"), url("./woff2/Pretendard-Black.woff2") format("woff2");
 }
