@@ -1,4 +1,5 @@
 import { memo } from "react";
+import type { PrefetchBehavior } from "react-router";
 
 import type { PostSummary } from "~/lib/post-types";
 import ArticleListItem from "~/components/ArticleList/Item";
@@ -12,9 +13,10 @@ interface Props {
 const ArticleList = ({ posts }: Props) => {
   return (
     <ol className={styles.container}>
-      {posts.map((post) => {
+      {posts.map((post, index) => {
         const title = post.title;
         const description = post.description || post.excerpt;
+        const prefetch: PrefetchBehavior = index < 2 ? "viewport" : "intent";
 
         return (
           <ArticleListItem
@@ -22,6 +24,7 @@ const ArticleList = ({ posts }: Props) => {
             title={title}
             slug={post.path}
             description={description}
+            prefetch={prefetch}
           />
         );
       })}

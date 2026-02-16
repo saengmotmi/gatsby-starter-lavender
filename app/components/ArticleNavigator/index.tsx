@@ -17,14 +17,14 @@ const ArticleNavigator = ({ previousArticle, nextArticle }: Props) => (
     <ul className={styles.navigationList}>
       <li>
         {previousArticle ? (
-          <Link className={styles.postLink} to={previousArticle.path} rel="prev">
+          <Link className={styles.postLink} to={previousArticle.path} rel="prev" prefetch="viewport" viewTransition>
             ← {previousArticle.title}
           </Link>
         ) : null}
       </li>
       <li>
         {nextArticle ? (
-          <Link className={styles.postLink} to={nextArticle.path} rel="next">
+          <Link className={styles.postLink} to={nextArticle.path} rel="next" prefetch="viewport" viewTransition>
             {nextArticle.title} →
           </Link>
         ) : null}
