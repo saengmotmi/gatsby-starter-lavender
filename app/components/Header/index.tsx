@@ -7,16 +7,15 @@ import * as styles from "./styles.css";
 
 interface Props {
   title: string;
-  resetFilter?: () => void;
 }
 
-const Header = ({ title, resetFilter }: Props) => {
+const Header = ({ title }: Props) => {
   return (
     <header className={styles.container}>
       <div className={styles.titleWrapper}>
         <div className={styles.circle} />
         <h1 className={styles.title}>
-          <Link to="/" onClick={resetFilter} prefetch="viewport" viewTransition>
+          <Link to="/" prefetch="viewport" viewTransition>
             {title}
           </Link>
         </h1>

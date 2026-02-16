@@ -7,14 +7,13 @@ import * as styles from "./styles.css";
 
 interface Props {
   title: string;
-  resetFilter?: () => void;
 }
 
-const Layout = ({ title, children, resetFilter }: PropsWithChildren<Props>) => {
+const Layout = ({ title, children }: PropsWithChildren<Props>) => {
   return (
     <div className={styles.root}>
       <div className={styles.container}>
-        <Header title={title} resetFilter={resetFilter} />
+        <Header title={title} />
         <main>{children}</main>
         <Footer />
       </div>
