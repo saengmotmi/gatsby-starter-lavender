@@ -23,6 +23,9 @@ jobs:
       - name: Verify build contract
         run: corepack yarn verify
 
+      - name: Verify CSS bundling (prevent FOUC on navigation)
+        run: node scripts/verify-css-bundle.mjs
+
       - name: Validate RSS output
         run: test -s build/client/rss.xml
 

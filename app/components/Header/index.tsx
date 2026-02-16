@@ -16,7 +16,7 @@ const Header = ({ title, resetFilter }: Props) => {
       <div className={styles.titleWrapper}>
         <div className={styles.circle} />
         <h1 className={styles.title}>
-          <Link to="/" onClick={resetFilter}>
+          <Link to="/" onClick={resetFilter} prefetch="viewport" viewTransition>
             {title}
           </Link>
         </h1>
