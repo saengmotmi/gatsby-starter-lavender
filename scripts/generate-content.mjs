@@ -1,8 +1,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import React from "react";
+import { ImageResponse } from "@vercel/og";
 import matter from "gray-matter";
-import sharp from "sharp";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypePrism from "rehype-prism-plus";
@@ -27,50 +28,29 @@ const OG_IMAGE_HEIGHT = 630;
 const OG_IMAGE_DIR = path.join(PUBLIC_DIR, "og");
 const OG_AVATAR_PATH = path.join(ROOT, "app", "images", "profile-pic.jpeg");
 const OG_FONT_DIR = path.join(ROOT, "app", "fonts", "Pretendard", "woff");
-const OG_FONT_FAMILY =
-  "Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+const OG_FONT_FAMILY = "Pretendard";
 
-let ogFontCssPromise;
+let ogFontsPromise;
 
-async function getOgFontCss() {
-  if (ogFontCssPromise) {
-    return ogFontCssPromise;
+async function getOgFonts() {
+  if (ogFontsPromise) {
+    return ogFontsPromise;
   }
 
-  ogFontCssPromise = (async () => {
-    // Sharp(SVG -> PNG) uses system fonts during build (e.g., Netlify's Linux image).
-    // Without bundling a Korean-capable font, Hangul glyphs become tofu (empty boxes).
-    // Embed Pretendard so OG images render deterministically across environments.
-    const fonts = [
-      { file: "Pretendard-SemiBold.woff", weight: 600 },
-      { file: "Pretendard-ExtraBold.woff", weight: 800 },
+  ogFontsPromise = (async () => {
+    // @vercel/og uses Satori + Resvg (WASM), so it doesn't depend on system fonts.
+    const semiBoldPath = path.join(OG_FONT_DIR, "Pretendard-SemiBold.woff");
+    const extraBoldPath = path.join(OG_FONT_DIR, "Pretendard-ExtraBold.woff");
+
+    const [semiBold, extraBold] = await Promise.all([fs.readFile(semiBoldPath), fs.readFile(extraBoldPath)]);
+
+    return [
+      { name: OG_FONT_FAMILY, data: semiBold, weight: 600, style: "normal" },
+      { name: OG_FONT_FAMILY, data: extraBold, weight: 800, style: "normal" },
     ];
-
-    const rules = [];
-    for (const font of fonts) {
-      const fontPath = path.join(OG_FONT_DIR, font.file);
-      try {
-        const data = await fs.readFile(fontPath);
-        const b64 = data.toString("base64");
-        rules.push(
-          [
-            "@font-face {",
-            `  font-family: 'Pretendard';`,
-            `  src: url('data:font/woff;base64,${b64}') format('woff');`,
-            `  font-weight: ${font.weight};`,
-            "  font-style: normal;",
-            "}",
-          ].join("\n")
-        );
-      } catch (error) {
-        console.warn(`[og] Failed to read font: ${fontPath}`, error);
-      }
-    }
-
-    return rules.join("\n");
   })();
 
-  return ogFontCssPromise;
+  return ogFontsPromise;
 }
 
 function toPosixPath(value) {
@@ -176,8 +156,8 @@ function formatOgSubtitle({ date, tags }) {
   return [date, tagText].filter(Boolean).join(" · ");
 }
 
-function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri, fontCss }) {
-  const safeSiteTitle = escapeHtml(siteTitle || "Blog");
+function buildOgElement({ siteTitle, title, subtitle, avatarDataUri }) {
+  const safeSiteTitle = String(siteTitle || "Blog").trim() || "Blog";
   const safeTitle = String(title || "").trim();
   const safeSubtitle = String(subtitle || "").trim();
 
@@ -185,84 +165,197 @@ function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri, fontCss }) {
   const subtitleLines = safeSubtitle ? wrapText(safeSubtitle, 52, 2) : [];
 
   const paddingX = 80;
-  const topY = 96;
-
   const titleFontSize = 64;
   const titleLineHeight = 76;
   const subtitleFontSize = 28;
   const subtitleLineHeight = 38;
 
-  const titleStartY = 260;
-  const subtitleStartY = titleStartY + titleLines.length * titleLineHeight + 22;
+  // These numbers were tuned to match the legacy lavender OG layout.
+  const titleTop = 190;
+  const subtitleTop = titleTop + titleLines.length * titleLineHeight + 28;
 
-  const titleText = titleLines
-    .map((line, index) => {
-      const y = titleStartY + index * titleLineHeight;
-      return `<text x="${paddingX}" y="${y}" font-size="${titleFontSize}" font-weight="800" fill="#111827" font-family="${OG_FONT_FAMILY}">${escapeHtml(
-        line
-      )}</text>`;
-    })
-    .join("");
-
-  const subtitleText = subtitleLines
-    .map((line, index) => {
-      const y = subtitleStartY + index * subtitleLineHeight;
-      return `<text x="${paddingX}" y="${y}" font-size="${subtitleFontSize}" font-weight="600" fill="#475569" font-family="${OG_FONT_FAMILY}">${escapeHtml(
-        line
-      )}</text>`;
-    })
-    .join("");
-
-  const avatarMarkup = avatarDataUri
-    ? `
-      <defs>
-        <clipPath id="avatar-clip">
-          <circle cx="1104" cy="${topY}" r="44" />
-        </clipPath>
-      </defs>
-      <circle cx="1104" cy="${topY}" r="48" fill="#111827" opacity="0.08" />
-      <image x="1060" y="${topY - 44}" width="88" height="88" href="${avatarDataUri}" clip-path="url(#avatar-clip)" preserveAspectRatio="xMidYMid slice" />
-    `
-    : "";
-
-  return `
-    <svg width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}" viewBox="0 0 ${OG_IMAGE_WIDTH} ${OG_IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-      ${fontCss ? `<style>\n${fontCss}\n</style>` : ""}
-      <defs>
-        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#F5F3FF" />
-          <stop offset="55%" stop-color="#FFFFFF" />
-          <stop offset="100%" stop-color="#EEF2FF" />
-        </linearGradient>
-        <radialGradient id="blob" cx="0.2" cy="0.15" r="0.8">
-          <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.22" />
-          <stop offset="100%" stop-color="#A78BFA" stop-opacity="0" />
-        </radialGradient>
-      </defs>
-
-      <rect width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}" fill="url(#bg)" />
-      <circle cx="240" cy="120" r="220" fill="url(#blob)" />
-      <circle cx="1060" cy="560" r="280" fill="#A78BFA" opacity="0.10" />
-
-      <circle cx="${paddingX}" cy="${topY - 10}" r="22" fill="#A78BFA" opacity="0.85" />
-      <text x="${paddingX + 34}" y="${topY}" font-size="32" font-weight="800" fill="#0F172A" font-family="${OG_FONT_FAMILY}">${safeSiteTitle}</text>
-      ${avatarMarkup}
-
-      ${titleText}
-      ${subtitleText}
-    </svg>
-  `.trim();
+  return React.createElement(
+    "div",
+    {
+      style: {
+        width: `${OG_IMAGE_WIDTH}px`,
+        height: `${OG_IMAGE_HEIGHT}px`,
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        backgroundImage: "linear-gradient(135deg, #F5F3FF 0%, #FFFFFF 55%, #EEF2FF 100%)",
+        fontFamily: OG_FONT_FAMILY,
+      },
+    },
+    React.createElement("div", {
+      style: {
+        position: "absolute",
+        left: "20px",
+        top: "-100px",
+        width: "440px",
+        height: "440px",
+        borderRadius: "220px",
+        backgroundImage:
+          "radial-gradient(circle at 20% 15%, rgba(167, 139, 250, 0.22) 0%, rgba(167, 139, 250, 0) 80%)",
+      },
+    }),
+    React.createElement("div", {
+      style: {
+        position: "absolute",
+        left: "780px",
+        top: "280px",
+        width: "560px",
+        height: "560px",
+        borderRadius: "280px",
+        backgroundColor: "rgba(167, 139, 250, 0.10)",
+      },
+    }),
+    React.createElement("div", {
+      style: {
+        position: "absolute",
+        left: `${paddingX - 22}px`,
+        top: "64px",
+        width: "44px",
+        height: "44px",
+        borderRadius: "22px",
+        backgroundColor: "rgba(167, 139, 250, 0.85)",
+      },
+    }),
+    React.createElement(
+      "div",
+      {
+        style: {
+          position: "absolute",
+          left: `${paddingX + 34}px`,
+          top: "60px",
+          fontSize: "32px",
+          lineHeight: "32px",
+          fontWeight: 800,
+          color: "#0F172A",
+        },
+      },
+      safeSiteTitle
+    ),
+    avatarDataUri
+      ? React.createElement(
+          "div",
+          {
+            style: {
+              position: "absolute",
+              left: "1056px",
+              top: "48px",
+              width: "96px",
+              height: "96px",
+              borderRadius: "48px",
+              backgroundColor: "rgba(17, 24, 39, 0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            },
+          },
+	          React.createElement(
+	            "div",
+	            { style: { display: "flex", width: "88px", height: "88px", borderRadius: "44px", overflow: "hidden" } },
+	            React.createElement("img", {
+	              src: avatarDataUri,
+	              width: 88,
+	              height: 88,
+              style: { objectFit: "cover" },
+            })
+          )
+        )
+      : null,
+    React.createElement(
+      "div",
+      {
+        style: {
+          position: "absolute",
+          left: `${paddingX}px`,
+          top: `${titleTop}px`,
+          display: "flex",
+          flexDirection: "column",
+          color: "#111827",
+          fontSize: `${titleFontSize}px`,
+          lineHeight: `${titleLineHeight}px`,
+          fontWeight: 800,
+        },
+      },
+      ...titleLines.map((line) => React.createElement("div", { key: line }, line))
+    ),
+    React.createElement(
+      "div",
+      {
+        style: {
+          position: "absolute",
+          left: `${paddingX}px`,
+          top: `${subtitleTop}px`,
+          display: "flex",
+          flexDirection: "column",
+          color: "#475569",
+          fontSize: `${subtitleFontSize}px`,
+          lineHeight: `${subtitleLineHeight}px`,
+          fontWeight: 600,
+        },
+      },
+      ...subtitleLines.map((line) => React.createElement("div", { key: line }, line))
+    )
+  );
 }
 
-async function writeOgPng({ svg, outputPath }) {
+async function writeOgPng({ element, outputPath, fonts }) {
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
-  await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toFile(outputPath);
+  validateSatoriDisplay(element);
+  const response = new ImageResponse(element, {
+    width: OG_IMAGE_WIDTH,
+    height: OG_IMAGE_HEIGHT,
+    fonts,
+  });
+  const png = Buffer.from(await response.arrayBuffer());
+  await fs.writeFile(outputPath, png);
+}
+
+function validateSatoriDisplay(element) {
+  const allowed = new Set(["flex", "contents", "none"]);
+
+  function walk(node, pointer) {
+    if (node == null || node === false) {
+      return;
+    }
+
+    if (Array.isArray(node)) {
+      node.forEach((child, index) => walk(child, `${pointer}[${index}]`));
+      return;
+    }
+
+    if (typeof node !== "object") {
+      return;
+    }
+
+    const type = node.type;
+    const props = node.props || {};
+    const children = props.children;
+
+    const childList = Array.isArray(children) ? children : children == null || children === false ? [] : [children];
+    const effectiveChildCount = childList.filter((child) => child != null && child !== false).length;
+
+    if (type === "div" && effectiveChildCount > 1) {
+      const display = props.style && typeof props.style === "object" ? props.style.display : undefined;
+      if (!allowed.has(display)) {
+        throw new Error(`Satori requires explicit display on <div> with multiple children: ${pointer} (display=${display})`);
+      }
+    }
+
+    childList.forEach((child, index) => walk(child, `${pointer}/${String(type)}[${index}]`));
+  }
+
+  walk(element, "root");
 }
 
 async function generateOgImages({ siteConfig, posts }) {
   await fs.mkdir(OG_IMAGE_DIR, { recursive: true });
 
-  const fontCss = await getOgFontCss();
+  const fonts = await getOgFonts();
 
   let avatarDataUri = null;
   try {
@@ -272,14 +365,13 @@ async function generateOgImages({ siteConfig, posts }) {
     // Optional
   }
 
-  const siteOgSvg = buildOgSvg({
+  const siteOgElement = buildOgElement({
     siteTitle: siteConfig.title,
     title: siteConfig.title,
     subtitle: siteConfig.description,
     avatarDataUri,
-    fontCss,
   });
-  await writeOgPng({ svg: siteOgSvg, outputPath: path.join(OG_IMAGE_DIR, "index.png") });
+  await writeOgPng({ element: siteOgElement, outputPath: path.join(OG_IMAGE_DIR, "index.png"), fonts });
 
   for (const post of posts) {
     if (post.draft) {
@@ -293,15 +385,14 @@ async function generateOgImages({ siteConfig, posts }) {
 
     const outputPath = path.join(PUBLIC_DIR, ogImagePath.replace(/^\/+/, ""));
 
-    const svg = buildOgSvg({
+    const element = buildOgElement({
       siteTitle: siteConfig.title,
       title: post.title,
       subtitle: formatOgSubtitle(post),
       avatarDataUri,
-      fontCss,
     });
 
-    await writeOgPng({ svg, outputPath });
+    await writeOgPng({ element, outputPath, fonts });
   }
 }
 
