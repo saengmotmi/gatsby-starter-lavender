@@ -34,6 +34,7 @@ yarn verify     # typecheck + build
 - Generated artifacts:
   - `app/generated/posts.json`
   - `public/content/blog/**/*`
+  - `public/og/**/*` (OG 이미지)
   - `public/rss.xml`
 
 ## Routes

@@ -47,6 +47,7 @@
     "@vanilla-extract/vite-plugin": "^5.1.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "sharp": "^0.34.5",
     "typescript": "^5.9.3",
     "vite": "^6.4.1",
     "vite-tsconfig-paths": "^5.1.4"

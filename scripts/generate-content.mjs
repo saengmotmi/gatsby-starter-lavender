@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import matter from "gray-matter";
+import sharp from "sharp";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypePrism from "rehype-prism-plus";
@@ -20,6 +21,11 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const PUBLIC_BLOG_ASSET_DIR = path.join(PUBLIC_DIR, "content", "blog");
 const STATIC_DIR = path.join(ROOT, "static");
 const SITE_CONFIG_PATH = path.join(ROOT, "site.config.json");
+
+const OG_IMAGE_WIDTH = 1200;
+const OG_IMAGE_HEIGHT = 630;
+const OG_IMAGE_DIR = path.join(PUBLIC_DIR, "og");
+const OG_AVATAR_PATH = path.join(ROOT, "app", "images", "profile-pic.jpeg");
 
 function toPosixPath(value) {
   return value.split(path.sep).join("/");
@@ -63,6 +69,189 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function wrapText(text, maxCharsPerLine, maxLines) {
+  const normalized = String(text).replace(/\s+/g, " ").trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const words = normalized.split(" ");
+  const lines = [];
+
+  let current = "";
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= maxCharsPerLine) {
+      current = candidate;
+      continue;
+    }
+
+    if (current) {
+      lines.push(current);
+      current = word;
+    } else {
+      // No spaces or a single token longer than max - hard break.
+      lines.push(word.slice(0, maxCharsPerLine));
+      current = word.slice(maxCharsPerLine);
+    }
+
+    if (lines.length >= maxLines) {
+      break;
+    }
+  }
+
+  if (lines.length < maxLines && current) {
+    lines.push(current);
+  }
+
+  if (lines.length > maxLines) {
+    lines.length = maxLines;
+  }
+
+  // If we had to truncate, add an ellipsis to the last line.
+  const rejoined = lines.join(" ");
+  if (rejoined.length < normalized.length) {
+    const lastIndex = lines.length - 1;
+    const last = lines[lastIndex] ?? "";
+    const trimmed = last.replace(/\s+$/, "");
+    lines[lastIndex] = trimmed.length >= 2 ? `${trimmed.slice(0, Math.max(0, trimmed.length - 1))}…` : `${trimmed}…`;
+  }
+
+  return lines;
+}
+
+function formatOgSubtitle({ date, tags }) {
+  const tagList = Array.isArray(tags) ? tags.map(String).filter(Boolean) : [];
+  const trimmed = tagList.slice(0, 6);
+  const suffix = tagList.length > 6 ? ` +${tagList.length - 6}` : "";
+  const tagText = trimmed.length ? `${trimmed.join(" · ")}${suffix}` : "";
+  return [date, tagText].filter(Boolean).join(" · ");
+}
+
+function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri }) {
+  const safeSiteTitle = escapeHtml(siteTitle || "Blog");
+  const safeTitle = String(title || "").trim();
+  const safeSubtitle = String(subtitle || "").trim();
+
+  const titleLines = wrapText(safeTitle, 24, 3);
+  const subtitleLines = safeSubtitle ? wrapText(safeSubtitle, 52, 2) : [];
+
+  const paddingX = 80;
+  const topY = 96;
+
+  const titleFontSize = 64;
+  const titleLineHeight = 76;
+  const subtitleFontSize = 28;
+  const subtitleLineHeight = 38;
+
+  const titleStartY = 260;
+  const subtitleStartY = titleStartY + titleLines.length * titleLineHeight + 22;
+
+  const titleText = titleLines
+    .map((line, index) => {
+      const y = titleStartY + index * titleLineHeight;
+      return `<text x="${paddingX}" y="${y}" font-size="${titleFontSize}" font-weight="800" fill="#111827" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">${escapeHtml(
+        line
+      )}</text>`;
+    })
+    .join("");
+
+  const subtitleText = subtitleLines
+    .map((line, index) => {
+      const y = subtitleStartY + index * subtitleLineHeight;
+      return `<text x="${paddingX}" y="${y}" font-size="${subtitleFontSize}" font-weight="600" fill="#475569" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">${escapeHtml(
+        line
+      )}</text>`;
+    })
+    .join("");
+
+  const avatarMarkup = avatarDataUri
+    ? `
+      <defs>
+        <clipPath id="avatar-clip">
+          <circle cx="1104" cy="${topY}" r="44" />
+        </clipPath>
+      </defs>
+      <circle cx="1104" cy="${topY}" r="48" fill="#111827" opacity="0.08" />
+      <image x="1060" y="${topY - 44}" width="88" height="88" href="${avatarDataUri}" clip-path="url(#avatar-clip)" preserveAspectRatio="xMidYMid slice" />
+    `
+    : "";
+
+  return `
+    <svg width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}" viewBox="0 0 ${OG_IMAGE_WIDTH} ${OG_IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#F5F3FF" />
+          <stop offset="55%" stop-color="#FFFFFF" />
+          <stop offset="100%" stop-color="#EEF2FF" />
+        </linearGradient>
+        <radialGradient id="blob" cx="0.2" cy="0.15" r="0.8">
+          <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.22" />
+          <stop offset="100%" stop-color="#A78BFA" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+
+      <rect width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}" fill="url(#bg)" />
+      <circle cx="240" cy="120" r="220" fill="url(#blob)" />
+      <circle cx="1060" cy="560" r="280" fill="#A78BFA" opacity="0.10" />
+
+      <circle cx="${paddingX}" cy="${topY - 10}" r="22" fill="#A78BFA" opacity="0.85" />
+      <text x="${paddingX + 34}" y="${topY}" font-size="32" font-weight="800" fill="#0F172A" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">${safeSiteTitle}</text>
+      ${avatarMarkup}
+
+      ${titleText}
+      ${subtitleText}
+    </svg>
+  `.trim();
+}
+
+async function writeOgPng({ svg, outputPath }) {
+  await fs.mkdir(path.dirname(outputPath), { recursive: true });
+  await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toFile(outputPath);
+}
+
+async function generateOgImages({ siteConfig, posts }) {
+  await fs.mkdir(OG_IMAGE_DIR, { recursive: true });
+
+  let avatarDataUri = null;
+  try {
+    const avatar = await fs.readFile(OG_AVATAR_PATH);
+    avatarDataUri = `data:image/jpeg;base64,${avatar.toString("base64")}`;
+  } catch {
+    // Optional
+  }
+
+  const siteOgSvg = buildOgSvg({
+    siteTitle: siteConfig.title,
+    title: siteConfig.title,
+    subtitle: siteConfig.description,
+    avatarDataUri,
+  });
+  await writeOgPng({ svg: siteOgSvg, outputPath: path.join(OG_IMAGE_DIR, "index.png") });
+
+  for (const post of posts) {
+    if (post.draft) {
+      continue;
+    }
+
+    const ogImagePath = typeof post.ogImage === "string" ? post.ogImage : "";
+    if (!ogImagePath.startsWith("/og/") || !ogImagePath.endsWith(".png")) {
+      continue;
+    }
+
+    const outputPath = path.join(PUBLIC_DIR, ogImagePath.replace(/^\/+/, ""));
+
+    const svg = buildOgSvg({
+      siteTitle: siteConfig.title,
+      title: post.title,
+      subtitle: formatOgSubtitle(post),
+      avatarDataUri,
+    });
+
+    await writeOgPng({ svg, outputPath });
+  }
 }
 
 function collectHeadings(headings) {
@@ -296,6 +485,7 @@ async function main() {
       excerpt,
       date: normalizeDate(data.date),
       tags: normalizeTags(data.tags),
+      ogImage: `/og/${normalizedPath}.png`,
       thumbnail: String(data.thumbnail || "/thumbnails/hello-world.jpg"),
       draft: Boolean(data.draft),
       html,
@@ -319,6 +509,7 @@ async function main() {
 
   const siteConfigRaw = await fs.readFile(SITE_CONFIG_PATH, "utf8");
   const siteConfig = JSON.parse(siteConfigRaw);
+  await generateOgImages({ siteConfig, posts });
   const rss = buildRssXml(siteConfig, posts.filter((post) => !post.draft));
   await fs.writeFile(path.join(PUBLIC_DIR, "rss.xml"), `${rss}\n`, "utf8");
 

@@ -42,7 +42,7 @@ export function meta({ data }: Route.MetaArgs) {
   const description = post.description || post.excerpt;
   const url = `${siteConfig.siteUrl}${post.path}`;
   const canonicalUrl = url.endsWith("/") ? url : `${url}/`;
-  const imagePath = post.thumbnail || siteConfig.thumbnail;
+  const imagePath = post.ogImage || post.thumbnail || siteConfig.thumbnail;
   const image = `${siteConfig.siteUrl}${imagePath}`;
   const twitter = siteConfig.social.twitter?.trim();
   const twitterHandle = twitter ? (twitter.startsWith("@") ? twitter : `@${twitter}`) : null;
