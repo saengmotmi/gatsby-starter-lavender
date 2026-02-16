@@ -1,6 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import React from "react";
+import { ImageResponse } from "@vercel/og";
 import matter from "gray-matter";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
@@ -20,6 +22,36 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const PUBLIC_BLOG_ASSET_DIR = path.join(PUBLIC_DIR, "content", "blog");
 const STATIC_DIR = path.join(ROOT, "static");
 const SITE_CONFIG_PATH = path.join(ROOT, "site.config.json");
+
+const OG_IMAGE_WIDTH = 1200;
+const OG_IMAGE_HEIGHT = 630;
+const OG_IMAGE_DIR = path.join(PUBLIC_DIR, "og");
+const OG_AVATAR_PATH = path.join(ROOT, "app", "images", "profile-pic.jpeg");
+const OG_FONT_DIR = path.join(ROOT, "app", "fonts", "Pretendard", "woff");
+const OG_FONT_FAMILY = "Pretendard";
+
+let ogFontsPromise;
+
+async function getOgFonts() {
+  if (ogFontsPromise) {
+    return ogFontsPromise;
+  }
+
+  ogFontsPromise = (async () => {
+    // @vercel/og uses Satori + Resvg (WASM), so it doesn't depend on system fonts.
+    const semiBoldPath = path.join(OG_FONT_DIR, "Pretendard-SemiBold.woff");
+    const extraBoldPath = path.join(OG_FONT_DIR, "Pretendard-ExtraBold.woff");
+
+    const [semiBold, extraBold] = await Promise.all([fs.readFile(semiBoldPath), fs.readFile(extraBoldPath)]);
+
+    return [
+      { name: OG_FONT_FAMILY, data: semiBold, weight: 600, style: "normal" },
+      { name: OG_FONT_FAMILY, data: extraBold, weight: 800, style: "normal" },
+    ];
+  })();
+
+  return ogFontsPromise;
+}
 
 function toPosixPath(value) {
   return value.split(path.sep).join("/");
@@ -63,6 +95,305 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function wrapText(text, maxCharsPerLine, maxLines) {
+  const normalized = String(text).replace(/\s+/g, " ").trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const words = normalized.split(" ");
+  const lines = [];
+
+  let current = "";
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= maxCharsPerLine) {
+      current = candidate;
+      continue;
+    }
+
+    if (current) {
+      lines.push(current);
+      current = word;
+    } else {
+      // No spaces or a single token longer than max - hard break.
+      lines.push(word.slice(0, maxCharsPerLine));
+      current = word.slice(maxCharsPerLine);
+    }
+
+    if (lines.length >= maxLines) {
+      break;
+    }
+  }
+
+  if (lines.length < maxLines && current) {
+    lines.push(current);
+  }
+
+  if (lines.length > maxLines) {
+    lines.length = maxLines;
+  }
+
+  // If we had to truncate, add an ellipsis to the last line.
+  const rejoined = lines.join(" ");
+  if (rejoined.length < normalized.length) {
+    const lastIndex = lines.length - 1;
+    const last = lines[lastIndex] ?? "";
+    const trimmed = last.replace(/\s+$/, "");
+    lines[lastIndex] = trimmed.length >= 2 ? `${trimmed.slice(0, Math.max(0, trimmed.length - 1))}…` : `${trimmed}…`;
+  }
+
+  return lines;
+}
+
+function formatOgSubtitle({ date, tags }) {
+  const tagList = Array.isArray(tags) ? tags.map(String).filter(Boolean) : [];
+  const trimmed = tagList.slice(0, 6);
+  const suffix = tagList.length > 6 ? ` +${tagList.length - 6}` : "";
+  const tagText = trimmed.length ? `${trimmed.join(" · ")}${suffix}` : "";
+  return [date, tagText].filter(Boolean).join(" · ");
+}
+
+function buildOgElement({ siteTitle, title, subtitle, avatarDataUri }) {
+  const safeSiteTitle = String(siteTitle || "Blog").trim() || "Blog";
+  const safeTitle = String(title || "").trim();
+  const safeSubtitle = String(subtitle || "").trim();
+
+  const titleLines = wrapText(safeTitle, 24, 3);
+  const subtitleLines = safeSubtitle ? wrapText(safeSubtitle, 52, 2) : [];
+
+  const paddingX = 80;
+  const titleFontSize = 64;
+  const titleLineHeight = 76;
+  const subtitleFontSize = 28;
+  const subtitleLineHeight = 38;
+
+  // These numbers were tuned to match the legacy lavender OG layout.
+  const titleTop = 190;
+  const subtitleTop = titleTop + titleLines.length * titleLineHeight + 28;
+
+  return React.createElement(
+    "div",
+    {
+      style: {
+        width: `${OG_IMAGE_WIDTH}px`,
+        height: `${OG_IMAGE_HEIGHT}px`,
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        backgroundImage: "linear-gradient(135deg, #F5F3FF 0%, #FFFFFF 55%, #EEF2FF 100%)",
+        fontFamily: OG_FONT_FAMILY,
+      },
+    },
+    React.createElement("div", {
+      style: {
+        position: "absolute",
+        left: "20px",
+        top: "-100px",
+        width: "440px",
+        height: "440px",
+        borderRadius: "220px",
+        backgroundImage:
+          "radial-gradient(circle at 20% 15%, rgba(167, 139, 250, 0.22) 0%, rgba(167, 139, 250, 0) 80%)",
+      },
+    }),
+    React.createElement("div", {
+      style: {
+        position: "absolute",
+        left: "780px",
+        top: "280px",
+        width: "560px",
+        height: "560px",
+        borderRadius: "280px",
+        backgroundColor: "rgba(167, 139, 250, 0.10)",
+      },
+    }),
+    React.createElement("div", {
+      style: {
+        position: "absolute",
+        left: `${paddingX - 22}px`,
+        top: "64px",
+        width: "44px",
+        height: "44px",
+        borderRadius: "22px",
+        backgroundColor: "rgba(167, 139, 250, 0.85)",
+      },
+    }),
+    React.createElement(
+      "div",
+      {
+        style: {
+          position: "absolute",
+          left: `${paddingX + 34}px`,
+          top: "60px",
+          fontSize: "32px",
+          lineHeight: "32px",
+          fontWeight: 800,
+          color: "#0F172A",
+        },
+      },
+      safeSiteTitle
+    ),
+    avatarDataUri
+      ? React.createElement(
+          "div",
+          {
+            style: {
+              position: "absolute",
+              left: "1056px",
+              top: "48px",
+              width: "96px",
+              height: "96px",
+              borderRadius: "48px",
+              backgroundColor: "rgba(17, 24, 39, 0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            },
+          },
+	          React.createElement(
+	            "div",
+	            { style: { display: "flex", width: "88px", height: "88px", borderRadius: "44px", overflow: "hidden" } },
+	            React.createElement("img", {
+	              src: avatarDataUri,
+	              width: 88,
+	              height: 88,
+              style: { objectFit: "cover" },
+            })
+          )
+        )
+      : null,
+    React.createElement(
+      "div",
+      {
+        style: {
+          position: "absolute",
+          left: `${paddingX}px`,
+          top: `${titleTop}px`,
+          display: "flex",
+          flexDirection: "column",
+          color: "#111827",
+          fontSize: `${titleFontSize}px`,
+          lineHeight: `${titleLineHeight}px`,
+          fontWeight: 800,
+        },
+      },
+      ...titleLines.map((line) => React.createElement("div", { key: line }, line))
+    ),
+    React.createElement(
+      "div",
+      {
+        style: {
+          position: "absolute",
+          left: `${paddingX}px`,
+          top: `${subtitleTop}px`,
+          display: "flex",
+          flexDirection: "column",
+          color: "#475569",
+          fontSize: `${subtitleFontSize}px`,
+          lineHeight: `${subtitleLineHeight}px`,
+          fontWeight: 600,
+        },
+      },
+      ...subtitleLines.map((line) => React.createElement("div", { key: line }, line))
+    )
+  );
+}
+
+async function writeOgPng({ element, outputPath, fonts }) {
+  await fs.mkdir(path.dirname(outputPath), { recursive: true });
+  validateSatoriDisplay(element);
+  const response = new ImageResponse(element, {
+    width: OG_IMAGE_WIDTH,
+    height: OG_IMAGE_HEIGHT,
+    fonts,
+  });
+  const png = Buffer.from(await response.arrayBuffer());
+  await fs.writeFile(outputPath, png);
+}
+
+function validateSatoriDisplay(element) {
+  const allowed = new Set(["flex", "contents", "none"]);
+
+  function walk(node, pointer) {
+    if (node == null || node === false) {
+      return;
+    }
+
+    if (Array.isArray(node)) {
+      node.forEach((child, index) => walk(child, `${pointer}[${index}]`));
+      return;
+    }
+
+    if (typeof node !== "object") {
+      return;
+    }
+
+    const type = node.type;
+    const props = node.props || {};
+    const children = props.children;
+
+    const childList = Array.isArray(children) ? children : children == null || children === false ? [] : [children];
+    const effectiveChildCount = childList.filter((child) => child != null && child !== false).length;
+
+    if (type === "div" && effectiveChildCount > 1) {
+      const display = props.style && typeof props.style === "object" ? props.style.display : undefined;
+      if (!allowed.has(display)) {
+        throw new Error(`Satori requires explicit display on <div> with multiple children: ${pointer} (display=${display})`);
+      }
+    }
+
+    childList.forEach((child, index) => walk(child, `${pointer}/${String(type)}[${index}]`));
+  }
+
+  walk(element, "root");
+}
+
+async function generateOgImages({ siteConfig, posts }) {
+  await fs.mkdir(OG_IMAGE_DIR, { recursive: true });
+
+  const fonts = await getOgFonts();
+
+  let avatarDataUri = null;
+  try {
+    const avatar = await fs.readFile(OG_AVATAR_PATH);
+    avatarDataUri = `data:image/jpeg;base64,${avatar.toString("base64")}`;
+  } catch {
+    // Optional
+  }
+
+  const siteOgElement = buildOgElement({
+    siteTitle: siteConfig.title,
+    title: siteConfig.title,
+    subtitle: siteConfig.description,
+    avatarDataUri,
+  });
+  await writeOgPng({ element: siteOgElement, outputPath: path.join(OG_IMAGE_DIR, "index.png"), fonts });
+
+  for (const post of posts) {
+    if (post.draft) {
+      continue;
+    }
+
+    const ogImagePath = typeof post.ogImage === "string" ? post.ogImage : "";
+    if (!ogImagePath.startsWith("/og/") || !ogImagePath.endsWith(".png")) {
+      continue;
+    }
+
+    const outputPath = path.join(PUBLIC_DIR, ogImagePath.replace(/^\/+/, ""));
+
+    const element = buildOgElement({
+      siteTitle: siteConfig.title,
+      title: post.title,
+      subtitle: formatOgSubtitle(post),
+      avatarDataUri,
+    });
+
+    await writeOgPng({ element, outputPath, fonts });
+  }
 }
 
 function collectHeadings(headings) {
@@ -296,6 +627,7 @@ async function main() {
       excerpt,
       date: normalizeDate(data.date),
       tags: normalizeTags(data.tags),
+      ogImage: `/og/${normalizedPath}.png`,
       thumbnail: String(data.thumbnail || "/thumbnails/hello-world.jpg"),
       draft: Boolean(data.draft),
       html,
@@ -319,6 +651,7 @@ async function main() {
 
   const siteConfigRaw = await fs.readFile(SITE_CONFIG_PATH, "utf8");
   const siteConfig = JSON.parse(siteConfigRaw);
+  await generateOgImages({ siteConfig, posts });
   const rss = buildRssXml(siteConfig, posts.filter((post) => !post.draft));
   await fs.writeFile(path.join(PUBLIC_DIR, "rss.xml"), `${rss}\n`, "utf8");
 

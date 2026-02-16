@@ -11,7 +11,7 @@ export function meta() {
   const description = siteConfig.description;
   const url = siteConfig.siteUrl;
   const canonicalUrl = url.endsWith("/") ? url : `${url}/`;
-  const image = `${siteConfig.siteUrl}${siteConfig.thumbnail}`;
+  const image = `${siteConfig.siteUrl}/og/index.png`;
   const twitter = siteConfig.social.twitter?.trim();
   const twitterHandle = twitter ? (twitter.startsWith("@") ? twitter : `@${twitter}`) : null;
 

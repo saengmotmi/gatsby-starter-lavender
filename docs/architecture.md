@@ -21,6 +21,7 @@
 4. Delivery layer
 - 정적 산출물: `build/client`
 - RSS: `build/client/rss.xml`
+- OG 이미지: `build/client/og/**/*` (빌드 시 생성)
 - 배포: Netlify
 
 ## 렌더링 흐름
