@@ -4,14 +4,15 @@ import ArticleList from "~/components/ArticleList";
 import Profile from "~/components/Profile";
 import { allPostSummaries } from "~/lib/post-summaries";
 import siteConfig from "~/lib/site-config";
+import { toAbsoluteUrl, toOgImageUrl } from "~/lib/urls";
 import Layout from "~/layout";
 
 export function meta() {
   const title = siteConfig.title;
   const description = siteConfig.description;
-  const url = siteConfig.siteUrl;
-  const canonicalUrl = url.endsWith("/") ? url : `${url}/`;
-  const image = `${siteConfig.siteUrl}/og/index.png`;
+  const url = toAbsoluteUrl("/");
+  const canonicalUrl = url;
+  const image = toOgImageUrl("/og/index.png");
   const twitter = siteConfig.social.twitter?.trim();
   const twitterHandle = twitter ? (twitter.startsWith("@") ? twitter : `@${twitter}`) : null;
 

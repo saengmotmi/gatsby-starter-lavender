@@ -5,6 +5,7 @@ export type SiteConfig = {
   author: string;
   description: string;
   siteUrl: string;
+  ogImageVersion?: string;
   thumbnail: string;
   social: {
     github: string;
