@@ -11,6 +11,7 @@
     "dev": "node ./scripts/generate-content.mjs && react-router dev",
     "build": "node ./scripts/generate-content.mjs && react-router build",
     "typecheck": "node ./scripts/generate-content.mjs && react-router typegen && tsc",
+    "modern-screenshot": "node ./scripts/modern-screenshot.mjs",
     "test:e2e": "playwright test",
     "test:e2e:scroll": "playwright test tests/e2e/scroll-restoration.spec.ts",
     "verify": "node ./scripts/generate-content.mjs && react-router typegen && tsc && node ./scripts/generate-content.mjs && react-router build",

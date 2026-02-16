@@ -21,7 +21,16 @@
 - CI 검증:
 - 수동 확인(스크린샷/링크):
 
+## 스크린샷 (modern-screenshot)
+UI/UX에 영향을 주는 PR은 아래 스크린샷을 **필수**로 포함해주세요.
+
+- As-Is (예: production 또는 `origin/main` 기준):
+- To-Be (예: Deploy Preview 또는 PR 브랜치 기준):
+- 생성 커맨드(예):
+  - `corepack yarn modern-screenshot --url <as-is-url> --url <to-be-url> --outDir docs/pr/<PR번호>`
+
 ## 체크리스트
 - [ ] 회귀 가능성이 있는 경로를 점검했다.
 - [ ] 문서/설정 변경이 필요한 경우 반영했다.
 - [ ] 배포 후 모니터링 포인트를 확인했다.
+- [ ] modern-screenshot 스크린샷을 PR 본문에 첨부했다.
