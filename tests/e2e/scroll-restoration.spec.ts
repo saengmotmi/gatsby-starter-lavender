@@ -54,3 +54,46 @@ test("keeps hash anchor navigation behavior", async ({ page }) => {
     )
     .toBe(true);
 });
+
+test("restores home list scroll position after navigating to a post and back", async ({ page }) => {
+  await page.goto("/");
+  const postItems = page.locator(".post-list-item");
+  await expect(postItems.first()).toBeVisible();
+
+  // Grow the list via infinite scroll so the scroll restoration target is meaningful.
+  // The pre-fix bug was that the page size was only read once at module init, so
+  // the home route would remount with a short list and couldn't restore deep scroll.
+  let count = await postItems.count();
+  for (let i = 0; i < 6 && count < 15; i++) {
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect.poll(() => postItems.count()).toBeGreaterThan(count);
+    count = await postItems.count();
+  }
+
+  const expectedScrollY = await page.evaluate(() => {
+    const maxScrollable = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const target = Math.min(2200, maxScrollable);
+    window.scrollTo(0, target);
+    return target;
+  });
+
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(200);
+
+  const href = await page.evaluate(() => {
+    const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>(".post-list-item a[href]"));
+    const visible = anchors.find((a) => {
+      const rect = a.getBoundingClientRect();
+      return rect.top >= 0 && rect.top <= window.innerHeight * 0.8;
+    });
+    return visible?.getAttribute("href");
+  });
+  expect(href).toBeTruthy();
+
+  await page.click(`a[href="${href}"]`);
+  await expect(page.locator(ARTICLE_SELECTOR)).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(postItems.first()).toBeVisible();
+  await expect.poll(() => page.evaluate((target) => Math.abs(window.scrollY - target), expectedScrollY)).toBeLessThan(160);
+});
