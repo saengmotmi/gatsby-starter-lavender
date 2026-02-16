@@ -4,6 +4,7 @@ import Tags from "~/components/Tags";
 import Utterances from "~/components/Utterances";
 import { findPostByPath, getAdjacentPosts } from "~/lib/posts";
 import siteConfig from "~/lib/site-config";
+import { toAbsoluteUrl, toOgImageUrl } from "~/lib/urls";
 import Layout from "~/layout";
 
 import type { Route } from "./+types/post";
@@ -40,10 +41,10 @@ export function meta({ data }: Route.MetaArgs) {
   const { post } = data;
   const title = post.title;
   const description = post.description || post.excerpt;
-  const url = `${siteConfig.siteUrl}${post.path}`;
-  const canonicalUrl = url.endsWith("/") ? url : `${url}/`;
+  const url = toAbsoluteUrl(post.path);
+  const canonicalUrl = url;
   const imagePath = post.ogImage || post.thumbnail || siteConfig.thumbnail;
-  const image = `${siteConfig.siteUrl}${imagePath}`;
+  const image = toOgImageUrl(imagePath);
   const twitter = siteConfig.social.twitter?.trim();
   const twitterHandle = twitter ? (twitter.startsWith("@") ? twitter : `@${twitter}`) : null;
   const publishedAt = new Date(post.date);
