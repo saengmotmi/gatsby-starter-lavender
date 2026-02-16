@@ -26,6 +26,52 @@ const OG_IMAGE_WIDTH = 1200;
 const OG_IMAGE_HEIGHT = 630;
 const OG_IMAGE_DIR = path.join(PUBLIC_DIR, "og");
 const OG_AVATAR_PATH = path.join(ROOT, "app", "images", "profile-pic.jpeg");
+const OG_FONT_DIR = path.join(ROOT, "app", "fonts", "Pretendard", "woff2");
+const OG_FONT_FAMILY =
+  "Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+let ogFontCssPromise;
+
+async function getOgFontCss() {
+  if (ogFontCssPromise) {
+    return ogFontCssPromise;
+  }
+
+  ogFontCssPromise = (async () => {
+    // Sharp(SVG -> PNG) uses system fonts during build (e.g., Netlify's Linux image).
+    // Without bundling a Korean-capable font, Hangul glyphs become tofu (empty boxes).
+    // Embed Pretendard so OG images render deterministically across environments.
+    const fonts = [
+      { file: "Pretendard-SemiBold.woff2", weight: 600 },
+      { file: "Pretendard-ExtraBold.woff2", weight: 800 },
+    ];
+
+    const rules = [];
+    for (const font of fonts) {
+      const fontPath = path.join(OG_FONT_DIR, font.file);
+      try {
+        const data = await fs.readFile(fontPath);
+        const b64 = data.toString("base64");
+        rules.push(
+          [
+            "@font-face {",
+            `  font-family: 'Pretendard';`,
+            `  src: url('data:font/woff2;base64,${b64}') format('woff2');`,
+            `  font-weight: ${font.weight};`,
+            "  font-style: normal;",
+            "}",
+          ].join("\n")
+        );
+      } catch (error) {
+        console.warn(`[og] Failed to read font: ${fontPath}`, error);
+      }
+    }
+
+    return rules.join("\n");
+  })();
+
+  return ogFontCssPromise;
+}
 
 function toPosixPath(value) {
   return value.split(path.sep).join("/");
@@ -130,7 +176,7 @@ function formatOgSubtitle({ date, tags }) {
   return [date, tagText].filter(Boolean).join(" · ");
 }
 
-function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri }) {
+function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri, fontCss }) {
   const safeSiteTitle = escapeHtml(siteTitle || "Blog");
   const safeTitle = String(title || "").trim();
   const safeSubtitle = String(subtitle || "").trim();
@@ -152,7 +198,7 @@ function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri }) {
   const titleText = titleLines
     .map((line, index) => {
       const y = titleStartY + index * titleLineHeight;
-      return `<text x="${paddingX}" y="${y}" font-size="${titleFontSize}" font-weight="800" fill="#111827" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">${escapeHtml(
+      return `<text x="${paddingX}" y="${y}" font-size="${titleFontSize}" font-weight="800" fill="#111827" font-family="${OG_FONT_FAMILY}">${escapeHtml(
         line
       )}</text>`;
     })
@@ -161,7 +207,7 @@ function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri }) {
   const subtitleText = subtitleLines
     .map((line, index) => {
       const y = subtitleStartY + index * subtitleLineHeight;
-      return `<text x="${paddingX}" y="${y}" font-size="${subtitleFontSize}" font-weight="600" fill="#475569" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">${escapeHtml(
+      return `<text x="${paddingX}" y="${y}" font-size="${subtitleFontSize}" font-weight="600" fill="#475569" font-family="${OG_FONT_FAMILY}">${escapeHtml(
         line
       )}</text>`;
     })
@@ -181,6 +227,7 @@ function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri }) {
 
   return `
     <svg width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}" viewBox="0 0 ${OG_IMAGE_WIDTH} ${OG_IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+      ${fontCss ? `<style>\n${fontCss}\n</style>` : ""}
       <defs>
         <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#F5F3FF" />
@@ -198,7 +245,7 @@ function buildOgSvg({ siteTitle, title, subtitle, avatarDataUri }) {
       <circle cx="1060" cy="560" r="280" fill="#A78BFA" opacity="0.10" />
 
       <circle cx="${paddingX}" cy="${topY - 10}" r="22" fill="#A78BFA" opacity="0.85" />
-      <text x="${paddingX + 34}" y="${topY}" font-size="32" font-weight="800" fill="#0F172A" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">${safeSiteTitle}</text>
+      <text x="${paddingX + 34}" y="${topY}" font-size="32" font-weight="800" fill="#0F172A" font-family="${OG_FONT_FAMILY}">${safeSiteTitle}</text>
       ${avatarMarkup}
 
       ${titleText}
@@ -215,6 +262,8 @@ async function writeOgPng({ svg, outputPath }) {
 async function generateOgImages({ siteConfig, posts }) {
   await fs.mkdir(OG_IMAGE_DIR, { recursive: true });
 
+  const fontCss = await getOgFontCss();
+
   let avatarDataUri = null;
   try {
     const avatar = await fs.readFile(OG_AVATAR_PATH);
@@ -228,6 +277,7 @@ async function generateOgImages({ siteConfig, posts }) {
     title: siteConfig.title,
     subtitle: siteConfig.description,
     avatarDataUri,
+    fontCss,
   });
   await writeOgPng({ svg: siteOgSvg, outputPath: path.join(OG_IMAGE_DIR, "index.png") });
 
@@ -248,6 +298,7 @@ async function generateOgImages({ siteConfig, posts }) {
       title: post.title,
       subtitle: formatOgSubtitle(post),
       avatarDataUri,
+      fontCss,
     });
 
     await writeOgPng({ svg, outputPath });
