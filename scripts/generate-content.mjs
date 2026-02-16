@@ -26,7 +26,7 @@ const OG_IMAGE_WIDTH = 1200;
 const OG_IMAGE_HEIGHT = 630;
 const OG_IMAGE_DIR = path.join(PUBLIC_DIR, "og");
 const OG_AVATAR_PATH = path.join(ROOT, "app", "images", "profile-pic.jpeg");
-const OG_FONT_DIR = path.join(ROOT, "app", "fonts", "Pretendard", "woff2");
+const OG_FONT_DIR = path.join(ROOT, "app", "fonts", "Pretendard", "woff");
 const OG_FONT_FAMILY =
   "Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
@@ -42,8 +42,8 @@ async function getOgFontCss() {
     // Without bundling a Korean-capable font, Hangul glyphs become tofu (empty boxes).
     // Embed Pretendard so OG images render deterministically across environments.
     const fonts = [
-      { file: "Pretendard-SemiBold.woff2", weight: 600 },
-      { file: "Pretendard-ExtraBold.woff2", weight: 800 },
+      { file: "Pretendard-SemiBold.woff", weight: 600 },
+      { file: "Pretendard-ExtraBold.woff", weight: 800 },
     ];
 
     const rules = [];
@@ -56,7 +56,7 @@ async function getOgFontCss() {
           [
             "@font-face {",
             `  font-family: 'Pretendard';`,
-            `  src: url('data:font/woff2;base64,${b64}') format('woff2');`,
+            `  src: url('data:font/woff;base64,${b64}') format('woff');`,
             `  font-weight: ${font.weight};`,
             "  font-style: normal;",
             "}",
