@@ -21,6 +21,7 @@ corepack yarn dev
 
 ```bash
 yarn new:post   # 새 글 스캐폴딩
+yarn sync:obsidian # Obsidian fleeting 노트 동기화
 yarn dev        # 콘텐츠 생성 + 개발 서버
 yarn build      # 콘텐츠 생성 + 정적 빌드
 yarn typecheck  # route typegen + tsc
@@ -48,6 +49,26 @@ yarn new:post -- \
 # fleeting 전용 빠른 생성
 yarn new:post -- --fleeting --slug quick-note --title "짧은 메모" --description "한 줄 요약"
 ```
+
+## Obsidian Sync
+
+iCloud Obsidian 노트를 `content/blog/fleeting`로 동기화합니다.
+
+```bash
+# 1) 볼트 경로를 한 번 설정
+export OBSIDIAN_VAULT_PATH="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/<VaultName>"
+
+# 2) 기본 소스 폴더(Publish/Fleeting) 동기화
+yarn sync:obsidian
+
+# 변경 확인만
+yarn sync:obsidian -- --dry-run
+
+# 소스에서 삭제된 노트도 블로그 파일에서 제거
+yarn sync:obsidian -- --prune
+```
+
+기본 소스 폴더는 `Publish/Fleeting`이며, 바꾸려면 `OBSIDIAN_FLEETING_DIR` 또는 `--source`를 사용하세요.
 
 ## Build/Data Flow
 

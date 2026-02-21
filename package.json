@@ -8,6 +8,7 @@
   "type": "module",
   "scripts": {
     "new:post": "node ./scripts/new-post.mjs",
+    "sync:obsidian": "node ./scripts/sync-obsidian-fleeting.mjs",
     "generate:content": "node ./scripts/generate-content.mjs",
     "dev": "node ./scripts/generate-content.mjs && react-router dev",
     "build": "node ./scripts/generate-content.mjs && react-router build",
