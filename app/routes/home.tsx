@@ -53,9 +53,34 @@ export function loader() {
 
 export default function Home() {
   const { posts } = useLoaderData<typeof loader>();
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: siteConfig.title,
+        url: siteConfig.siteUrl,
+        description: siteConfig.description,
+        inLanguage: "ko-KR",
+      },
+      {
+        "@type": "Blog",
+        name: siteConfig.title,
+        url: siteConfig.siteUrl,
+        description: siteConfig.description,
+        inLanguage: "ko-KR",
+        publisher: {
+          "@type": "Person",
+          name: siteConfig.author,
+        },
+      },
+    ],
+  };
+  const structuredDataJson = JSON.stringify(structuredData).replaceAll("<", "\\u003c");
 
   return (
     <Layout title={siteConfig.title}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredDataJson }} />
       <Profile />
       {posts.length === 0 ? <p>No posts found.</p> : <ArticleList posts={posts} />}
     </Layout>

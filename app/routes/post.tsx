@@ -15,6 +15,11 @@ const normalizeRoutePath = (splat: string) => {
   return path.endsWith("/") ? path : `${path}/`;
 };
 
+const toIsoDate = (value: string) => {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+};
+
 export function loader({ params }: Route.LoaderArgs) {
   const splat = params["*"] || "";
   const path = normalizeRoutePath(splat);
@@ -92,9 +97,44 @@ export function meta({ data }: Route.MetaArgs) {
 export default function PostRoute({ loaderData }: Route.ComponentProps) {
   const { post, previousPost, nextPost } = loaderData;
   const commentConfig = siteConfig.comment;
+  const url = `${siteConfig.siteUrl}${post.path}`;
+  const imagePath = post.ogImage || post.thumbnail || siteConfig.thumbnail;
+  const image = `${siteConfig.siteUrl}${imagePath}`;
+  const publishedAtIso = toIsoDate(post.date);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description || post.excerpt,
+    url,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    image: [image],
+    inLanguage: "ko-KR",
+    articleSection: post.category,
+    keywords: post.tags,
+    author: {
+      "@type": "Person",
+      name: siteConfig.author,
+    },
+    publisher: {
+      "@type": "Person",
+      name: siteConfig.author,
+    },
+    ...(publishedAtIso
+      ? {
+          datePublished: publishedAtIso,
+          dateModified: publishedAtIso,
+        }
+      : {}),
+  };
+  const structuredDataJson = JSON.stringify(structuredData).replaceAll("<", "\\u003c");
 
   return (
     <Layout title={siteConfig.title}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredDataJson }} />
       <article className={styles.article} itemScope itemType="http://schema.org/Article">
         <header className={styles.header}>
           <h1 className={styles.title} itemProp="headline">

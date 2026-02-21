@@ -26,6 +26,16 @@ yarn typecheck  # route typegen + tsc
 yarn verify     # typecheck + build
 ```
 
+## Analytics (GTM)
+
+Google Tag Manager를 `<head>` script + `<body>` noscript iframe 방식으로 적용합니다.
+
+- 컨테이너 ID: `GTM-NGXTQ8ZS`
+- 적용 위치: `app/root.tsx`
+- 프로덕션 빌드에서만 GTM 스니펫이 삽입됩니다.
+
+GTM 태그/트리거/변수 설정은 Google Tag Manager 콘솔에서 관리합니다.
+
 ## Build/Data Flow
 
 - Content source: `content/blog/**/*.md`
@@ -36,6 +46,19 @@ yarn verify     # typecheck + build
   - `public/content/blog/**/*`
   - `public/og/**/*` (OG 이미지)
   - `public/rss.xml`
+  - `public/sitemap.xml`
+  - `public/robots.txt`
+
+## Blog Essentials
+
+기술 블로그 운영을 위한 기본 SEO/배포 산출물을 빌드 시 자동 생성합니다.
+
+- RSS: `rss.xml`
+- Sitemap: `sitemap.xml` (홈 + 공개 포스트)
+- Robots: `robots.txt` (Sitemap 경로 포함)
+- Structured data:
+  - 홈: `WebSite`, `Blog`
+  - 포스트: `BlogPosting`
 
 ## Routes
 

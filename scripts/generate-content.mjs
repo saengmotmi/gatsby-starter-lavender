@@ -575,6 +575,65 @@ function buildRssXml(siteConfig, posts) {
   ].join("\n");
 }
 
+function normalizeSiteUrl(siteUrl) {
+  const normalized = String(siteUrl || "").trim();
+  if (!normalized) {
+    return "";
+  }
+
+  return normalized.replace(/\/+$/, "");
+}
+
+function toAbsoluteSiteUrl(siteUrl, pathname) {
+  const base = normalizeSiteUrl(siteUrl);
+  const normalizedPath = pathname === "/" ? "/" : `/${String(pathname).replace(/^\/+|\/+$/g, "")}/`;
+  return `${base}${normalizedPath}`;
+}
+
+function toIsoDateString(value) {
+  const parsed = new Date(String(value));
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toISOString().slice(0, 10);
+}
+
+function buildSitemapXml(siteConfig, posts) {
+  const escapeXml = (value) =>
+    escapeHtml(value).replaceAll("&#39;", "&apos;");
+
+  const publishedPosts = posts.filter((post) => !post.draft);
+  const homepageLastmod = publishedPosts.length > 0 ? toIsoDateString(publishedPosts[0].date) : null;
+  const entries = [
+    { path: "/", lastmod: homepageLastmod },
+    ...publishedPosts.map((post) => ({
+      path: post.path,
+      lastmod: toIsoDateString(post.date),
+    })),
+  ];
+
+  const urls = entries
+    .map((entry) => {
+      const loc = toAbsoluteSiteUrl(siteConfig.siteUrl, entry.path);
+      const lastmod = entry.lastmod ? `<lastmod>${entry.lastmod}</lastmod>` : "";
+      return `<url><loc>${escapeXml(loc)}</loc>${lastmod}</url>`;
+    })
+    .join("\n");
+
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    urls,
+    "</urlset>",
+  ].join("\n");
+}
+
+function buildRobotsTxt(siteConfig) {
+  const sitemapUrl = `${normalizeSiteUrl(siteConfig.siteUrl)}/sitemap.xml`;
+  return ["User-agent: *", "Allow: /", "", `Sitemap: ${sitemapUrl}`].join("\n");
+}
+
 async function main() {
   const markdownFiles = await walkMarkdownFiles(BLOG_DIR);
 
@@ -654,6 +713,10 @@ async function main() {
   await generateOgImages({ siteConfig, posts });
   const rss = buildRssXml(siteConfig, posts.filter((post) => !post.draft));
   await fs.writeFile(path.join(PUBLIC_DIR, "rss.xml"), `${rss}\n`, "utf8");
+  const sitemap = buildSitemapXml(siteConfig, posts);
+  await fs.writeFile(path.join(PUBLIC_DIR, "sitemap.xml"), `${sitemap}\n`, "utf8");
+  const robots = buildRobotsTxt(siteConfig);
+  await fs.writeFile(path.join(PUBLIC_DIR, "robots.txt"), `${robots}\n`, "utf8");
 
   console.log(`generated ${posts.length} posts`);
 }
