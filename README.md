@@ -20,10 +20,30 @@ corepack yarn dev
 ## Commands
 
 ```bash
+yarn new:post   # 새 글 스캐폴딩
 yarn dev        # 콘텐츠 생성 + 개발 서버
 yarn build      # 콘텐츠 생성 + 정적 빌드
 yarn typecheck  # route typegen + tsc
 yarn verify     # typecheck + build
+```
+
+## New Post CLI
+
+새 글 템플릿을 자동으로 생성합니다.
+
+```bash
+yarn new:post
+```
+
+옵션 기반으로 바로 생성할 수도 있습니다.
+
+```bash
+yarn new:post -- \
+  --category article \
+  --slug my-first-post \
+  --title "2026-02-21 새 글 제목" \
+  --description "한 줄 요약" \
+  --tags "Article,React"
 ```
 
 ## Build/Data Flow
