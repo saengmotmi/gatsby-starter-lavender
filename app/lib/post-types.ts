@@ -11,6 +11,7 @@ export type Post = {
   excerpt: string;
   date: string;
   tags: string[];
+  ogImage: string;
   thumbnail: string;
   draft: boolean;
   html: string;

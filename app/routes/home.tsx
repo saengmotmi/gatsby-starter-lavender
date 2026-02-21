@@ -1,19 +1,16 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { useLoaderData, useSearchParams } from "react-router";
 
 import ArticleList from "~/components/ArticleList";
 import FleetingGrid from "~/components/FleetingGrid";
 import Profile from "~/components/Profile";
-import { useInfiniteScroll } from "~/hooks/useInfiniteScroll";
-import { usePage } from "~/hooks/usePage";
 import { allPostSummaries } from "~/lib/post-summaries";
 import type { PostType } from "~/lib/post-types";
 import siteConfig from "~/lib/site-config";
+import { toAbsoluteUrl, toOgImageUrl } from "~/lib/urls";
 import Layout from "~/layout";
 import * as styles from "~/routes/home.styles.css";
 
-const articlePerPage = 5;
-const fleetingPerPage = 12;
 const listTypes: Array<{ value: PostType; label: string }> = [
   { value: "article", label: "Article" },
   { value: "fleeting", label: "Fleeting" },
@@ -35,13 +32,12 @@ const applyListTypeToParams = (params: URLSearchParams, listType: PostType) => {
 
   params.set("type", listType);
 };
-
 export function meta() {
   const title = siteConfig.title;
   const description = siteConfig.description;
-  const url = siteConfig.siteUrl;
-  const canonicalUrl = url.endsWith("/") ? url : `${url}/`;
-  const image = `${siteConfig.siteUrl}${siteConfig.thumbnail}`;
+  const url = toAbsoluteUrl("/");
+  const canonicalUrl = url;
+  const image = toOgImageUrl("/og/index.png");
   const twitter = siteConfig.social.twitter?.trim();
   const twitterHandle = twitter ? (twitter.startsWith("@") ? twitter : `@${twitter}`) : null;
 
@@ -81,35 +77,14 @@ export function loader() {
 }
 
 export default function Home() {
-  const infiniteScrollRef = useRef<HTMLDivElement | null>(null);
-  const [page, setPage] = usePage();
   const [searchParams, setSearchParams] = useSearchParams();
   const { posts } = useLoaderData<typeof loader>();
   const selectedListType = parseListType(searchParams.get("type"));
-  const postsPerPage = selectedListType === "fleeting" ? fleetingPerPage : articlePerPage;
 
   const filteredPosts = useMemo(
     () => posts.filter((post) => post.type === selectedListType),
     [posts, selectedListType]
   );
-
-  const totalPage = Math.max(1, Math.ceil(filteredPosts.length / postsPerPage));
-
-  useInfiniteScroll(
-    infiniteScrollRef,
-    useCallback(() => {
-      if (page < totalPage) {
-        setPage(page + 1);
-      }
-    }, [page, setPage, totalPage])
-  );
-
-  const resetFilter = useCallback(() => {
-    const nextParams = new URLSearchParams(searchParams);
-    applyListTypeToParams(nextParams, "article");
-    setSearchParams(nextParams);
-    setPage(1);
-  }, [searchParams, setPage, setSearchParams]);
 
   const changeListType = useCallback(
     (nextType: PostType) => {
@@ -120,15 +95,37 @@ export default function Home() {
       const nextParams = new URLSearchParams(searchParams);
       applyListTypeToParams(nextParams, nextType);
       setSearchParams(nextParams);
-      setPage(1);
     },
-    [searchParams, selectedListType, setPage, setSearchParams]
+    [searchParams, selectedListType, setSearchParams]
   );
-
-  const visiblePosts = filteredPosts.slice(0, Math.min(page * postsPerPage, filteredPosts.length));
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: siteConfig.title,
+        url: siteConfig.siteUrl,
+        description: siteConfig.description,
+        inLanguage: "ko-KR",
+      },
+      {
+        "@type": "Blog",
+        name: siteConfig.title,
+        url: siteConfig.siteUrl,
+        description: siteConfig.description,
+        inLanguage: "ko-KR",
+        publisher: {
+          "@type": "Person",
+          name: siteConfig.author,
+        },
+      },
+    ],
+  };
+  const structuredDataJson = JSON.stringify(structuredData).replaceAll("<", "\\u003c");
 
   return (
-    <Layout title={siteConfig.title} resetFilter={resetFilter}>
+    <Layout title={siteConfig.title}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredDataJson }} />
       <Profile />
       <nav className={styles.listFilter} aria-label="목록 유형 선택">
         {listTypes.map((listType) => {
@@ -146,14 +143,13 @@ export default function Home() {
           );
         })}
       </nav>
-      {visiblePosts.length === 0 ? (
+      {filteredPosts.length === 0 ? (
         <p className={styles.emptyMessage}>아직 {selectedListType} 포스트가 없습니다.</p>
       ) : selectedListType === "fleeting" ? (
-        <FleetingGrid posts={visiblePosts} />
+        <FleetingGrid posts={filteredPosts} />
       ) : (
-        <ArticleList posts={visiblePosts} />
+        <ArticleList posts={filteredPosts} />
       )}
-      <div className="infinite-scroll" ref={infiniteScrollRef} />
     </Layout>
   );
 }
