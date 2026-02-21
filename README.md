@@ -20,11 +20,47 @@ corepack yarn dev
 ## Commands
 
 ```bash
+yarn sync:obsidian      # Obsidian fleeting 노트 동기화
+yarn sync:obsidian:pr   # 동기화 + 브랜치/커밋/푸시/PR 자동 생성
 yarn dev        # 콘텐츠 생성 + 개발 서버
 yarn build      # 콘텐츠 생성 + 정적 빌드
 yarn typecheck  # route typegen + tsc
 yarn verify     # typecheck + build
 ```
+
+## Obsidian Sync Workflow
+
+Obsidian에서 수정한 fleeting 노트를 블로그 콘텐츠로 반영하고 PR까지 자동 생성할 수 있습니다.
+
+```bash
+# 1) Obsidian 볼트 경로 1회 설정
+export OBSIDIAN_VAULT_PATH="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/<VaultName>"
+
+# 2) 기본 소스(Publish/Fleeting)에서 동기화만
+yarn sync:obsidian
+
+# 3) 동기화 + PR 자동 생성(권장)
+yarn sync:obsidian:pr
+```
+
+옵션 예시:
+
+```bash
+# 변경 미리보기
+yarn sync:obsidian -- --dry-run
+
+# 소스에서 삭제된 노트도 반영
+yarn sync:obsidian:pr -- --prune
+
+# PR 생성 없이 push까지만
+yarn sync:obsidian:pr -- --no-pr
+```
+
+참고:
+
+- 기본 소스 폴더: `Publish/Fleeting`
+- 변경하려면 `OBSIDIAN_FLEETING_DIR` 또는 `--source` 사용
+- `sync:obsidian:pr`는 `gh` CLI 로그인 상태(`gh auth login`)가 필요
 
 ## Analytics (GTM)
 
