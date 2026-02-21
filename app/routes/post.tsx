@@ -9,8 +9,22 @@ import Layout from "~/layout";
 import type { Route } from "./+types/post";
 import * as styles from "./post.styles.css";
 
+const removeDataSuffix = (value: string) => {
+  return value.replace(/\/?\.data$/, "");
+};
+
+const safeDecodeURIComponent = (value: string) => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
 const normalizeRoutePath = (splat: string) => {
-  const path = splat.startsWith("/") ? splat : `/${splat}`;
+  const withoutDataSuffix = removeDataSuffix(splat);
+  const decoded = safeDecodeURIComponent(withoutDataSuffix);
+  const path = decoded.startsWith("/") ? decoded : `/${decoded}`;
   return path.endsWith("/") ? path : `${path}/`;
 };
 
