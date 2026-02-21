@@ -1,6 +1,9 @@
+export type PostType = "article" | "fleeting";
+
 export type Post = {
   id: string;
   path: string;
+  type: PostType;
   category: string;
   slug: string;
   title: string;

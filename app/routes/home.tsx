@@ -1,12 +1,37 @@
-import { useLoaderData } from "react-router";
+import { useCallback, useMemo } from "react";
+import { useLoaderData, useSearchParams } from "react-router";
 
 import ArticleList from "~/components/ArticleList";
+import FleetingGrid from "~/components/FleetingGrid";
 import Profile from "~/components/Profile";
 import { allPostSummaries } from "~/lib/post-summaries";
+import type { PostType } from "~/lib/post-types";
 import siteConfig from "~/lib/site-config";
 import { toAbsoluteUrl, toOgImageUrl } from "~/lib/urls";
 import Layout from "~/layout";
+import * as styles from "~/routes/home.styles.css";
 
+const listTypes: Array<{ value: PostType; label: string }> = [
+  { value: "article", label: "Article" },
+  { value: "fleeting", label: "Fleeting" },
+];
+
+const parseListType = (value: string | null): PostType => {
+  if (value === "fleeting") {
+    return "fleeting";
+  }
+
+  return "article";
+};
+
+const applyListTypeToParams = (params: URLSearchParams, listType: PostType) => {
+  if (listType === "article") {
+    params.delete("type");
+    return;
+  }
+
+  params.set("type", listType);
+};
 export function meta() {
   const title = siteConfig.title;
   const description = siteConfig.description;
@@ -52,7 +77,27 @@ export function loader() {
 }
 
 export default function Home() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { posts } = useLoaderData<typeof loader>();
+  const selectedListType = parseListType(searchParams.get("type"));
+
+  const filteredPosts = useMemo(
+    () => posts.filter((post) => post.type === selectedListType),
+    [posts, selectedListType]
+  );
+
+  const changeListType = useCallback(
+    (nextType: PostType) => {
+      if (nextType === selectedListType) {
+        return;
+      }
+
+      const nextParams = new URLSearchParams(searchParams);
+      applyListTypeToParams(nextParams, nextType);
+      setSearchParams(nextParams);
+    },
+    [searchParams, selectedListType, setSearchParams]
+  );
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -82,7 +127,29 @@ export default function Home() {
     <Layout title={siteConfig.title}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredDataJson }} />
       <Profile />
-      {posts.length === 0 ? <p>No posts found.</p> : <ArticleList posts={posts} />}
+      <nav className={styles.listFilter} aria-label="목록 유형 선택">
+        {listTypes.map((listType) => {
+          const isSelected = listType.value === selectedListType;
+
+          return (
+            <button
+              className={isSelected ? styles.filterButtonSelected : styles.filterButton}
+              key={listType.value}
+              onClick={() => changeListType(listType.value)}
+              type="button"
+            >
+              {listType.label}
+            </button>
+          );
+        })}
+      </nav>
+      {filteredPosts.length === 0 ? (
+        <p className={styles.emptyMessage}>아직 {selectedListType} 포스트가 없습니다.</p>
+      ) : selectedListType === "fleeting" ? (
+        <FleetingGrid posts={filteredPosts} />
+      ) : (
+        <ArticleList posts={filteredPosts} />
+      )}
     </Layout>
   );
 }

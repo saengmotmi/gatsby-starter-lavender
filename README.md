@@ -20,10 +20,34 @@ corepack yarn dev
 ## Commands
 
 ```bash
+yarn new:post   # 새 글 스캐폴딩
+yarn sync:obsidian # Obsidian fleeting 노트 동기화
 yarn dev        # 콘텐츠 생성 + 개발 서버
 yarn build      # 콘텐츠 생성 + 정적 빌드
 yarn typecheck  # route typegen + tsc
 yarn verify     # typecheck + build
+```
+
+## New Post CLI
+
+새 글 템플릿을 자동으로 생성합니다.
+
+```bash
+yarn new:post
+```
+
+옵션 기반으로 바로 생성할 수도 있습니다.
+
+```bash
+yarn new:post -- \
+  --category article \
+  --slug my-first-post \
+  --title "2026-02-21 새 글 제목" \
+  --description "한 줄 요약" \
+  --tags "Article,React"
+
+# fleeting 전용 빠른 생성
+yarn new:post -- --fleeting --slug quick-note --title "짧은 메모" --description "한 줄 요약"
 ```
 
 ## Analytics (GTM)
@@ -36,6 +60,26 @@ Google Tag Manager를 `<head>` script + `<body>` noscript iframe 방식으로 �
 
 GTM 태그/트리거/변수 설정은 Google Tag Manager 콘솔에서 관리합니다.
 
+## Obsidian Sync
+
+iCloud Obsidian 노트를 `content/blog/fleeting`로 동기화합니다.
+
+```bash
+# 1) 볼트 경로를 한 번 설정
+export OBSIDIAN_VAULT_PATH="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/<VaultName>"
+
+# 2) 기본 소스 폴더(Publish/Fleeting) 동기화
+yarn sync:obsidian
+
+# 변경 확인만
+yarn sync:obsidian -- --dry-run
+
+# 소스에서 삭제된 노트도 블로그 파일에서 제거
+yarn sync:obsidian -- --prune
+```
+
+기본 소스 폴더는 `Publish/Fleeting`이며, 바꾸려면 `OBSIDIAN_FLEETING_DIR` 또는 `--source`를 사용하세요.
+
 ## Build/Data Flow
 
 - Content source: `content/blog/**/*.md`
@@ -46,6 +90,7 @@ GTM 태그/트리거/변수 설정은 Google Tag Manager 콘솔에서 관리합�
   - `public/content/blog/**/*`
   - `public/og/**/*` (OG 이미지)
   - `public/rss.xml`
+  - `public/rss-fleeting.xml`
   - `public/sitemap.xml`
   - `public/robots.txt`
 

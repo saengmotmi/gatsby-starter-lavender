@@ -468,6 +468,18 @@ function normalizeTags(value) {
   return [];
 }
 
+function normalizePostType(value) {
+  const normalized = String(value || "article")
+    .trim()
+    .toLowerCase();
+
+  if (normalized === "fleeting") {
+    return "fleeting";
+  }
+
+  return "article";
+}
+
 function rewriteRelativeUrls(relativeDir) {
   return () => (tree) => {
     visit(tree, "element", (node) => {
@@ -543,7 +555,7 @@ async function copyDir(src, dest, shouldCopyFile = () => true) {
   }
 }
 
-function buildRssXml(siteConfig, posts) {
+function buildRssXml(siteConfig, posts, channelOverrides = {}) {
   const escapeXml = (value) =>
     escapeHtml(value).replaceAll("&#39;", "&apos;");
 
@@ -566,9 +578,9 @@ function buildRssXml(siteConfig, posts) {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<rss version="2.0">',
     "<channel>",
-    `<title>${escapeXml(siteConfig.title)}</title>`,
+    `<title>${escapeXml(channelOverrides.title || siteConfig.title)}</title>`,
     `<link>${escapeXml(siteConfig.siteUrl)}</link>`,
-    `<description>${escapeXml(siteConfig.description)}</description>`,
+    `<description>${escapeXml(channelOverrides.description || siteConfig.description)}</description>`,
     items,
     "</channel>",
     "</rss>",
@@ -679,6 +691,7 @@ async function main() {
     posts.push({
       id: normalizedPath,
       path: postPath,
+      type: normalizePostType(data.type),
       category,
       slug,
       title: String(data.title || normalizedPath),
@@ -711,8 +724,18 @@ async function main() {
   const siteConfigRaw = await fs.readFile(SITE_CONFIG_PATH, "utf8");
   const siteConfig = JSON.parse(siteConfigRaw);
   await generateOgImages({ siteConfig, posts });
-  const rss = buildRssXml(siteConfig, posts.filter((post) => !post.draft));
+  const publishedPosts = posts.filter((post) => !post.draft);
+  const rss = buildRssXml(siteConfig, publishedPosts);
+  const fleetingRss = buildRssXml(
+    siteConfig,
+    publishedPosts.filter((post) => post.type === "fleeting"),
+    {
+      title: `${siteConfig.title} - Fleeting`,
+      description: "짧은 메모(Fleeting) 전용 피드",
+    }
+  );
   await fs.writeFile(path.join(PUBLIC_DIR, "rss.xml"), `${rss}\n`, "utf8");
+  await fs.writeFile(path.join(PUBLIC_DIR, "rss-fleeting.xml"), `${fleetingRss}\n`, "utf8");
   const sitemap = buildSitemapXml(siteConfig, posts);
   await fs.writeFile(path.join(PUBLIC_DIR, "sitemap.xml"), `${sitemap}\n`, "utf8");
   const robots = buildRobotsTxt(siteConfig);
