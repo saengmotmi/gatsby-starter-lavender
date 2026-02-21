@@ -62,6 +62,26 @@ yarn sync:obsidian:pr -- --no-pr
 - 변경하려면 `OBSIDIAN_FLEETING_DIR` 또는 `--source` 사용
 - `sync:obsidian:pr`는 `gh` CLI 로그인 상태(`gh auth login`)가 필요
 
+### Mobile Trigger (권장)
+
+모바일에서 직접 PR을 트리거하려면 GitHub Actions 워크플로우를 사용하세요.
+
+1. self-hosted macOS 러너를 1대 등록합니다.
+2. 저장소 Variables에 아래 값 추가:
+   - `OBSIDIAN_VAULT_PATH`: 러너 머신 기준 Obsidian vault 절대 경로
+   - (선택) `OBSIDIAN_FLEETING_DIR`: 기본 소스 경로를 바꿀 때
+3. 모바일에서 `Actions > Obsidian Sync PR > Run workflow` 실행
+
+워크플로우 파일:
+
+- `.github/workflows/obsidian-sync-pr.yml`
+
+특징:
+
+- Obsidian에서 `content/blog/fleeting`로 동기화
+- 변경이 있을 때만 PR 생성
+- branch: `codex/obsidian-sync-<timestamp>`
+
 ## Analytics (GTM)
 
 Google Tag Manager를 `<head>` script + `<body>` noscript iframe 방식으로 적용합니다.

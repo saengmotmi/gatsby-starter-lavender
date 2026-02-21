@@ -1,0 +1,133 @@
+name: Obsidian Sync PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Obsidian 소스 폴더 (vault 기준 상대경로)"
+        required: false
+        default: "Publish/Fleeting"
+      prune:
+        description: "소스에서 삭제된 노트도 블로그에서 제거"
+        required: false
+        type: boolean
+        default: false
+      title:
+        description: "PR 제목(비우면 자동)"
+        required: false
+  repository_dispatch:
+    types:
+      - obsidian_sync
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: obsidian-sync-pr
+  cancel-in-progress: false
+
+jobs:
+  sync-and-pr:
+    runs-on:
+      - self-hosted
+      - macOS
+    env:
+      OBSIDIAN_VAULT_PATH: ${{ vars.OBSIDIAN_VAULT_PATH }}
+      DEFAULT_SOURCE: ${{ vars.OBSIDIAN_FLEETING_DIR }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+
+      - name: Resolve options
+        id: opts
+        shell: bash
+        env:
+          WORKFLOW_SOURCE: ${{ github.event.inputs.source || '' }}
+          WORKFLOW_PRUNE: ${{ github.event.inputs.prune || '' }}
+          WORKFLOW_TITLE: ${{ github.event.inputs.title || '' }}
+          DISPATCH_SOURCE: ${{ github.event.client_payload.source || '' }}
+          DISPATCH_PRUNE: ${{ github.event.client_payload.prune || '' }}
+          DISPATCH_TITLE: ${{ github.event.client_payload.title || '' }}
+        run: |
+          source_value="$WORKFLOW_SOURCE"
+          prune_value="$WORKFLOW_PRUNE"
+          title_value="$WORKFLOW_TITLE"
+
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            source_value="$DISPATCH_SOURCE"
+            prune_value="$DISPATCH_PRUNE"
+            title_value="$DISPATCH_TITLE"
+          fi
+
+          if [ -z "$source_value" ]; then
+            if [ -n "$DEFAULT_SOURCE" ]; then
+              source_value="$DEFAULT_SOURCE"
+            else
+              source_value="Publish/Fleeting"
+            fi
+          fi
+
+          if [ -z "$prune_value" ]; then
+            prune_value="false"
+          fi
+
+          if [ -z "$title_value" ]; then
+            title_value="chore: Obsidian fleeting 동기화 ($(date +%F))"
+          fi
+
+          echo "source=$source_value" >> "$GITHUB_OUTPUT"
+          echo "prune=$prune_value" >> "$GITHUB_OUTPUT"
+          echo "title=$title_value" >> "$GITHUB_OUTPUT"
+
+      - name: Sync from Obsidian
+        shell: bash
+        run: |
+          args=(--source "${{ steps.opts.outputs.source }}")
+          if [ "${{ steps.opts.outputs.prune }}" = "true" ]; then
+            args+=(--prune)
+          fi
+          node ./scripts/sync-obsidian-fleeting.mjs "${args[@]}"
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: ${{ steps.opts.outputs.title }}
+          title: ${{ steps.opts.outputs.title }}
+          body: |
+            ## 배경
+            - 모바일 Obsidian 작성 후 원격에서 바로 동기화/PR을 만들기 위한 자동화 실행 결과입니다.
+
+            ## 변경 사항
+            - Obsidian 노트를 `content/blog/fleeting`로 동기화했습니다.
+
+            ## 체크리스트
+            - [x] 동기화 결과 확인
+            - [ ] 리뷰 및 머지
+          branch: codex/obsidian-sync
+          branch-suffix: timestamp
+          base: main
+          add-paths: |
+            content/blog/fleeting/**
+          delete-branch: true
+
+      - name: Summary
+        shell: bash
+        run: |
+          if [ -n "${{ steps.cpr.outputs.pull-request-url }}" ]; then
+            echo "PR created: ${{ steps.cpr.outputs.pull-request-url }}"
+          else
+            echo "No content changes. PR was not created."
+          fi
