@@ -11,9 +11,11 @@ const USAGE = `
 
 Usage:
   yarn new:post
-  yarn new:post -- --category article --slug my-first-post --title "2026-02-21 새 글" --description "요약" --tags "Article,React"
+  yarn new:post -- --type fleeting --slug cache-vs-network --title "짧은 메모" --description "요약"
 
 Options:
+      --type <article|fleeting> 글 유형 (기본값: article)
+      --fleeting              --type fleeting 축약 옵션
   -c, --category <value>      카테고리 경로 (예: article, react)
   -s, --slug <value>          슬러그 경로 (예: my-first-post, react/server-components)
   -t, --title <value>         포스트 제목
@@ -67,13 +69,25 @@ function normalizePathLike(value) {
 
 function parseTags(rawTags) {
   if (!rawTags) {
-    return ["Article"];
+    return [];
   }
 
   return rawTags
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean);
+}
+
+function normalizePostType(rawType) {
+  const normalized = String(rawType || "article")
+    .trim()
+    .toLowerCase();
+
+  if (normalized === "article" || normalized === "fleeting") {
+    return normalized;
+  }
+
+  throw new Error(`type은 article 또는 fleeting 이어야 합니다: ${rawType}`);
 }
 
 function slugifyTitle(title) {
@@ -90,12 +104,13 @@ function slugifyTitle(title) {
 
 function parseArgs(argv) {
   const options = {
+    type: "article",
     category: "",
     slug: "",
     title: "",
     description: "",
     date: todayLocal(),
-    tags: "Article",
+    tags: "",
     thumbnail: "/thumbnails/hello-world.jpg",
     draft: false,
     flat: false,
@@ -125,6 +140,13 @@ function parseArgs(argv) {
       case "--category":
         options.category = readValue(i, arg);
         i += 1;
+        break;
+      case "--type":
+        options.type = readValue(i, arg);
+        i += 1;
+        break;
+      case "--fleeting":
+        options.type = "fleeting";
         break;
       case "-s":
       case "--slug":
@@ -187,14 +209,18 @@ async function promptMissing(options) {
   };
 
   try {
-    options.category = options.category || (await ask("카테고리", "article"));
+    options.type = normalizePostType(options.type);
+
+    const defaultCategory = options.type === "fleeting" ? "fleeting" : "article";
+    options.category = options.category || (await ask("카테고리", defaultCategory));
 
     const defaultSlug = options.slug || slugifyTitle(options.title);
     options.slug = options.slug || (await ask("슬러그", defaultSlug || "new-post"));
 
     options.title = options.title || (await ask("제목", `${options.date} 새 글 제목`));
     options.description = options.description || (await ask("설명", "여기에 한 줄 요약을 작성하세요"));
-    options.tags = options.tags || (await ask("태그(쉼표 구분)", "Article"));
+    const defaultTags = options.type === "fleeting" ? "Fleeting" : "Article";
+    options.tags = options.tags || (await ask("태그(쉼표 구분)", defaultTags));
     options.thumbnail =
       options.thumbnail || (await ask("썸네일", "/thumbnails/hello-world.jpg"));
 
@@ -210,16 +236,19 @@ async function promptMissing(options) {
 }
 
 function validate(options) {
-  const category = normalizePathLike(options.category);
+  const type = normalizePostType(options.type);
+  const defaultCategory = type === "fleeting" ? "fleeting" : "article";
+  const category = normalizePathLike(options.category || defaultCategory);
   const slug = normalizePathLike(options.slug);
   const title = String(options.title).trim();
   const description = String(options.description).trim();
   const date = String(options.date).trim();
   const thumbnail = String(options.thumbnail).trim();
-  const tags = parseTags(options.tags);
+  const parsedTags = parseTags(options.tags);
+  const tags = parsedTags.length > 0 ? parsedTags : [type === "fleeting" ? "Fleeting" : "Article"];
 
   if (!category) {
-    throw new Error("category가 비어 있습니다. --category를 입력해주세요.");
+    throw new Error("category가 비어 있습니다.");
   }
   if (!slug) {
     throw new Error("slug가 비어 있습니다. --slug를 입력해주세요.");
@@ -236,12 +265,9 @@ function validate(options) {
   if (!thumbnail.startsWith("/")) {
     throw new Error("thumbnail은 '/'로 시작해야 합니다. 예: /thumbnails/hello-world.jpg");
   }
-  if (tags.length === 0) {
-    throw new Error("최소 한 개 이상의 태그가 필요합니다.");
-  }
-
   return {
     ...options,
+    type,
     category,
     slug,
     title,
@@ -257,6 +283,7 @@ function buildFrontmatter(options) {
     "---",
     `title: ${options.title}`,
     `date: ${options.date}`,
+    `type: ${options.type}`,
     `description: ${options.description}`,
     `tags: [${options.tags.join(", ")}]`,
     `thumbnail: ${options.thumbnail}`,

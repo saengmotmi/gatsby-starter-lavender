@@ -44,6 +44,9 @@ yarn new:post -- \
   --title "2026-02-21 새 글 제목" \
   --description "한 줄 요약" \
   --tags "Article,React"
+
+# fleeting 전용 빠른 생성
+yarn new:post -- --fleeting --slug quick-note --title "짧은 메모" --description "한 줄 요약"
 ```
 
 ## Build/Data Flow
@@ -55,6 +58,7 @@ yarn new:post -- \
   - `app/generated/posts.json`
   - `public/content/blog/**/*`
   - `public/rss.xml`
+  - `public/rss-fleeting.xml`
 
 ## Routes
 
