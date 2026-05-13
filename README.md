@@ -22,7 +22,7 @@ corepack yarn dev
 ```bash
 yarn new:post   # 새 글 스캐폴딩
 yarn sync:obsidian # Obsidian fleeting 노트 동기화
-yarn dev        # 콘텐츠 생성 + 개발 서버
+yarn dev        # 콘텐츠 생성 + 개발 서버(content 변경 자동 반영)
 yarn build      # 콘텐츠 생성 + 정적 빌드
 yarn typecheck  # route typegen + tsc
 yarn verify     # typecheck + build
