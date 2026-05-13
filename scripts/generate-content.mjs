@@ -7,6 +7,7 @@ import matter from "gray-matter";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypePrism from "rehype-prism-plus";
+import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import { remark } from "remark";
@@ -671,7 +672,8 @@ async function main() {
       await remark()
         .use(remarkGfm)
         .use(remarkMath)
-        .use(remarkRehype)
+        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(rehypeRaw)
         .use(rehypeSlug)
         .use(collectHeadings(headingRecords))
         .use(rewriteRelativeUrls(path.posix.dirname(relativePath)))
