@@ -1,0 +1,26 @@
+{
+  "pretendardRuntimeFontBytes": {
+    "before": 2824700,
+    "after": 337196,
+    "delta": -2487504,
+    "reductionRatio": 0.8806259071759833
+  },
+  "fontPreloadCount": {
+    "before": 3,
+    "after": 0
+  },
+  "subsetGeneration": {
+    "mode": "build-time content subset",
+    "source": "app/fonts/Pretendard/source/*.woff2",
+    "generator": "scripts/generate-content.mjs"
+  },
+  "visualDiff": {
+    "homeMobileChangedPixels": 0,
+    "postMobileChangedPixels": 0
+  },
+  "commands": [
+    "fnm exec --using=24 corepack yarn verify",
+    "fnm exec --using=24 node scripts/verify-css-bundle.mjs",
+    "Playwright + sharp visual comparison: / and /react/what-is-rsc/ at 390x844"
+  ]
+}

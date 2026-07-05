@@ -3,6 +3,7 @@ import path from "node:path";
 
 import React from "react";
 import { ImageResponse } from "@vercel/og";
+import subsetFont from "subset-font";
 import matter from "gray-matter";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
@@ -30,6 +31,19 @@ const OG_IMAGE_DIR = path.join(PUBLIC_DIR, "og");
 const OG_AVATAR_PATH = path.join(ROOT, "app", "images", "profile-pic.jpeg");
 const OG_FONT_DIR = path.join(ROOT, "app", "fonts", "Pretendard", "woff");
 const OG_FONT_FAMILY = "Pretendard";
+const RUNTIME_FONT_SOURCE_DIR = path.join(ROOT, "app", "fonts", "Pretendard", "source");
+const RUNTIME_FONT_SUBSET_DIR = path.join(ROOT, "app", "fonts", "Pretendard", "woff2-subset");
+const RUNTIME_FONT_SUBSETS = [
+  { source: "Pretendard-Regular.woff2", output: "Pretendard-Regular.subset.woff2" },
+  { source: "Pretendard-Bold.woff2", output: "Pretendard-Bold.subset.woff2" },
+  { source: "Pretendard-Black.woff2", output: "Pretendard-Black.subset.woff2" },
+];
+const FONT_TEXT_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".css", ".json"]);
+const FONT_TEXT_IGNORED_DIRS = new Set(["fonts", "generated", "images"]);
+const COMMON_FONT_TEXT = [
+  Array.from({ length: 95 }, (_, index) => String.fromCharCode(32 + index)).join(""),
+  "•→←©·–—“”‘’…()[]{}<>/\\|_-+=*&^%$#@!~`'\",.:;?",
+].join("\n");
 
 let ogFontsPromise;
 
@@ -556,6 +570,51 @@ async function copyDir(src, dest, shouldCopyFile = () => true) {
   }
 }
 
+async function walkFontTextFiles(dir) {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    if (FONT_TEXT_IGNORED_DIRS.has(entry.name)) {
+      continue;
+    }
+
+    const fullPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      files.push(...(await walkFontTextFiles(fullPath)));
+      continue;
+    }
+
+    if (entry.isFile() && FONT_TEXT_EXTENSIONS.has(path.extname(entry.name))) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
+async function buildRuntimeFontSubsetText({ markdownTexts, siteConfig }) {
+  const appTextFiles = await walkFontTextFiles(path.join(ROOT, "app"));
+  const appTexts = await Promise.all(appTextFiles.map((filePath) => fs.readFile(filePath, "utf8")));
+  const rawText = [COMMON_FONT_TEXT, JSON.stringify(siteConfig), ...markdownTexts, ...appTexts].join("\n");
+  return Array.from(new Set(Array.from(rawText))).join("");
+}
+
+async function generateRuntimeFontSubsets(subsetText) {
+  await fs.mkdir(RUNTIME_FONT_SUBSET_DIR, { recursive: true });
+
+  await Promise.all(
+    RUNTIME_FONT_SUBSETS.map(async ({ source, output }) => {
+      const sourceBuffer = await fs.readFile(path.join(RUNTIME_FONT_SOURCE_DIR, source));
+      const subsetBuffer = await subsetFont(sourceBuffer, subsetText, {
+        targetFormat: "woff2",
+      });
+      await fs.writeFile(path.join(RUNTIME_FONT_SUBSET_DIR, output), subsetBuffer);
+    })
+  );
+}
+
 function buildRssXml(siteConfig, posts, channelOverrides = {}) {
   const escapeXml = (value) =>
     escapeHtml(value).replaceAll("&#39;", "&apos;");
@@ -651,9 +710,11 @@ async function main() {
   const markdownFiles = await walkMarkdownFiles(BLOG_DIR);
 
   const posts = [];
+  const markdownTexts = [];
 
   for (const markdownPath of markdownFiles) {
     const raw = await fs.readFile(markdownPath, "utf8");
+    markdownTexts.push(raw);
     const { data, content } = matter(raw);
 
     const relativePath = toPosixPath(path.relative(BLOG_DIR, markdownPath));
@@ -725,6 +786,7 @@ async function main() {
 
   const siteConfigRaw = await fs.readFile(SITE_CONFIG_PATH, "utf8");
   const siteConfig = JSON.parse(siteConfigRaw);
+  await generateRuntimeFontSubsets(await buildRuntimeFontSubsetText({ markdownTexts, siteConfig }));
   await generateOgImages({ siteConfig, posts });
   const publishedPosts = posts.filter((post) => !post.draft);
   const rss = buildRssXml(siteConfig, publishedPosts);
