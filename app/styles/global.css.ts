@@ -52,6 +52,40 @@ globalStyle("img", {
   maxWidth: "100%",
 });
 
+globalStyle(".blur-image-wrapper", {
+  position: "relative",
+  display: "block",
+  width: "100%",
+  maxWidth: "100%",
+  margin: "0 auto",
+  overflow: "hidden",
+  backgroundColor: vars.colors.gray100,
+  transition: `background-color ${vars.transitions.transitionDuration} ${vars.transitions.transitionTiming}`,
+});
+
+globalStyle(".blur-image-wrapper::before", {
+  position: "absolute",
+  inset: 0,
+  backgroundImage: "var(--blur-placeholder)",
+  backgroundPosition: "center",
+  backgroundSize: "cover",
+  content: "",
+  filter: "blur(18px)",
+  opacity: 0.75,
+  transform: "scale(1.08)",
+});
+
+globalStyle(".blur-image-wrapper > .blur-image", {
+  position: "absolute",
+  inset: 0,
+  zIndex: 1,
+  width: "100%",
+  height: "100%",
+  maxWidth: "none",
+  margin: 0,
+  objectFit: "contain",
+});
+
 globalStyle("table", {
   width: "100%",
   marginTop: "0.75rem",
