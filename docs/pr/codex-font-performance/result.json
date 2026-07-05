@@ -1,0 +1,34 @@
+[
+  {
+    "name": "home-mobile",
+    "path": "/",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "changed": 0,
+    "total": 329160,
+    "ratio": 0,
+    "files": {
+      "before": "docs/pr/codex-font-performance/home-mobile-before.png",
+      "after": "docs/pr/codex-font-performance/home-mobile-after.png",
+      "diff": "docs/pr/codex-font-performance/home-mobile-diff.png"
+    }
+  },
+  {
+    "name": "post-mobile",
+    "path": "/react/what-is-rsc/",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "changed": 0,
+    "total": 329160,
+    "ratio": 0,
+    "files": {
+      "before": "docs/pr/codex-font-performance/post-mobile-before.png",
+      "after": "docs/pr/codex-font-performance/post-mobile-after.png",
+      "diff": "docs/pr/codex-font-performance/post-mobile-diff.png"
+    }
+  }
+]

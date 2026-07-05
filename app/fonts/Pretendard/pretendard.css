@@ -1,9 +1,14 @@
+/*
+ * Runtime text uses generated content-subset Pretendard fonts.
+ * scripts/generate-content.mjs regenerates these files from the original
+ * source fonts before dev/build, so new posts contribute their glyphs.
+ */
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: local("Pretendard Regular"), url("./woff2/Pretendard-Regular.woff2") format("woff2");
+  src: local("Pretendard Regular"), url("./woff2-subset/Pretendard-Regular.subset.woff2") format("woff2");
 }
 
 @font-face {
@@ -11,7 +16,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: local("Pretendard Bold"), url("./woff2/Pretendard-Bold.woff2") format("woff2");
+  src: local("Pretendard Bold"), url("./woff2-subset/Pretendard-Bold.subset.woff2") format("woff2");
 }
 
 @font-face {
@@ -19,5 +24,5 @@
   font-style: normal;
   font-weight: 900;
   font-display: swap;
-  src: local("Pretendard Black"), url("./woff2/Pretendard-Black.woff2") format("woff2");
+  src: local("Pretendard Black"), url("./woff2-subset/Pretendard-Black.subset.woff2") format("woff2");
 }

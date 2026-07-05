@@ -27,27 +27,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 export function links() {
   const rssTitle = `${siteConfig.title} RSS`;
   return [
-    {
-      rel: "preload",
-      href: "/assets/Pretendard-Regular-BleH6oJ0.woff2",
-      as: "font",
-      type: "font/woff2",
-      crossOrigin: "anonymous",
-    },
-    {
-      rel: "preload",
-      href: "/assets/Pretendard-Bold-BDestNM2.woff2",
-      as: "font",
-      type: "font/woff2",
-      crossOrigin: "anonymous",
-    },
-    {
-      rel: "preload",
-      href: "/assets/Pretendard-Black-DSUTIcIc.woff2",
-      as: "font",
-      type: "font/woff2",
-      crossOrigin: "anonymous",
-    },
     { rel: "icon", type: "image/png", href: "/thumbnails/main-github.png" },
     { rel: "apple-touch-icon", href: "/thumbnails/main-github.png" },
     { rel: "shortcut icon", href: "/thumbnails/main-github.png" },
