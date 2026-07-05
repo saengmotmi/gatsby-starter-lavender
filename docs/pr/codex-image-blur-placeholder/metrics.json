@@ -1,0 +1,35 @@
+{
+  "images": {
+    "blurWrappers": 81,
+    "localContentImages": 81,
+    "externalImages": 12
+  },
+  "dataPayloadBytes": {
+    "before": {
+      "count": 45,
+      "total": 1403962,
+      "max": 97160,
+      "p95": 69657
+    },
+    "after": {
+      "count": 45,
+      "total": 1435093,
+      "max": 101138,
+      "p95": 70456
+    }
+  },
+  "visualDiff": {
+    "route": "/react/rrv7-static-prerendering/",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "changedPixels": 0,
+    "changedRatio": 0
+  },
+  "commands": [
+    "fnm exec --using=24 corepack yarn verify",
+    "fnm exec --using=24 node scripts/verify-css-bundle.mjs",
+    "Playwright + sharp visual comparison: /react/rrv7-static-prerendering/ first local image viewport"
+  ]
+}

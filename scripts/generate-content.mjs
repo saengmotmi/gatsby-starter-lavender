@@ -4,6 +4,7 @@ import path from "node:path";
 import React from "react";
 import { ImageResponse } from "@vercel/og";
 import subsetFont from "subset-font";
+import sharp from "sharp";
 import matter from "gray-matter";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
@@ -44,8 +45,12 @@ const COMMON_FONT_TEXT = [
   Array.from({ length: 95 }, (_, index) => String.fromCharCode(32 + index)).join(""),
   "•→←©·–—“”‘’…()[]{}<>/\\|_-+=*&^%$#@!~`'\",.:;?",
 ].join("\n");
+const IMAGE_PLACEHOLDER_WIDTH = 24;
+const IMAGE_PLACEHOLDER_QUALITY = 35;
+const IMAGE_PLACEHOLDER_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
 
 let ogFontsPromise;
+const imagePlaceholderCache = new Map();
 
 async function getOgFonts() {
   if (ogFontsPromise) {
@@ -495,18 +500,123 @@ function normalizePostType(value) {
   return "article";
 }
 
+function resolveLocalBlogImage(relativeDir, src) {
+  if (src.startsWith("/content/blog/")) {
+    const resolved = path.posix.normalize(src.replace(/^\/content\/blog\//, ""));
+    return {
+      filePath: path.join(BLOG_DIR, ...resolved.split("/")),
+      publicSrc: `/content/blog/${resolved}`,
+    };
+  }
+
+  if (isExternalLink(src)) {
+    return null;
+  }
+
+  const resolved = path.posix.normalize(path.posix.join(relativeDir, src));
+  return {
+    filePath: path.join(BLOG_DIR, ...resolved.split("/")),
+    publicSrc: `/content/blog/${resolved}`,
+  };
+}
+
+function getClassNameList(value) {
+  if (Array.isArray(value)) {
+    return value.map(String).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value.split(/\s+/).filter(Boolean);
+  }
+
+  return [];
+}
+
+async function getImagePlaceholder(filePath) {
+  const extension = path.extname(filePath).toLowerCase();
+  if (!IMAGE_PLACEHOLDER_EXTENSIONS.has(extension)) {
+    return null;
+  }
+
+  if (imagePlaceholderCache.has(filePath)) {
+    return imagePlaceholderCache.get(filePath);
+  }
+
+  const placeholderPromise = (async () => {
+    try {
+      const metadata = await sharp(filePath, { animated: false }).rotate().metadata();
+      if (!metadata.width || !metadata.height) {
+        return null;
+      }
+
+      const placeholder = await sharp(filePath, { animated: false })
+        .rotate()
+        .resize({ width: IMAGE_PLACEHOLDER_WIDTH, withoutEnlargement: true })
+        .blur()
+        .webp({ quality: IMAGE_PLACEHOLDER_QUALITY })
+        .toBuffer();
+
+      return {
+        width: metadata.width,
+        height: metadata.height,
+        dataUri: `data:image/webp;base64,${placeholder.toString("base64")}`,
+      };
+    } catch {
+      return null;
+    }
+  })();
+
+  imagePlaceholderCache.set(filePath, placeholderPromise);
+  return placeholderPromise;
+}
+
+function withBlurImageWrapper(imageNode, { width, height, dataUri }) {
+  imageNode.properties = {
+    ...imageNode.properties,
+    className: [...getClassNameList(imageNode.properties.className), "blur-image"],
+    decoding: imageNode.properties.decoding || "async",
+    height,
+    loading: imageNode.properties.loading || "lazy",
+    width,
+  };
+
+  return {
+    type: "element",
+    tagName: "span",
+    properties: {
+      className: ["blur-image-wrapper"],
+      style: `--blur-placeholder: url("${dataUri}"); aspect-ratio: ${width} / ${height}; max-width: ${width}px;`,
+    },
+    children: [imageNode],
+  };
+}
+
 function rewriteRelativeUrls(relativeDir) {
-  return () => (tree) => {
-    visit(tree, "element", (node) => {
+  return () => async (tree) => {
+    const imageTasks = [];
+
+    visit(tree, "element", (node, index, parent) => {
       if (!node.properties) {
         return;
       }
 
       if (node.tagName === "img" && typeof node.properties.src === "string") {
-        const src = node.properties.src;
-        if (!isExternalLink(src)) {
-          const resolved = path.posix.normalize(path.posix.join(relativeDir, src));
-          node.properties.src = `/content/blog/${resolved}`;
+        node.properties.decoding = node.properties.decoding || "async";
+        node.properties.loading = node.properties.loading || "lazy";
+
+        const localImage = resolveLocalBlogImage(relativeDir, node.properties.src);
+        if (localImage) {
+          node.properties.src = localImage.publicSrc;
+          imageTasks.push(
+            (async () => {
+              const placeholder = await getImagePlaceholder(localImage.filePath);
+              if (!placeholder || !parent || typeof index !== "number") {
+                return;
+              }
+
+              parent.children[index] = withBlurImageWrapper(node, placeholder);
+            })()
+          );
         }
       }
 
@@ -527,6 +637,8 @@ function rewriteRelativeUrls(relativeDir) {
         }
       }
     });
+
+    await Promise.all(imageTasks);
   };
 }
 
