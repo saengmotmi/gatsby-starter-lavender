@@ -532,6 +532,11 @@ function getClassNameList(value) {
   return [];
 }
 
+function appendStyleDeclaration(value, declaration) {
+  const style = typeof value === "string" ? value.trim() : "";
+  return style ? `${style.replace(/;?$/, ";")} ${declaration}` : declaration;
+}
+
 async function getImagePlaceholder(filePath) {
   const extension = path.extname(filePath).toLowerCase();
   if (!IMAGE_PLACEHOLDER_EXTENSIONS.has(extension)) {
@@ -612,6 +617,16 @@ function rewriteRelativeUrls(relativeDir) {
               const placeholder = await getImagePlaceholder(localImage.filePath);
               if (!placeholder || !parent || typeof index !== "number") {
                 return;
+              }
+
+              if (parent.type === "element" && parent.tagName === "figure") {
+                parent.properties = {
+                  ...parent.properties,
+                  style: appendStyleDeclaration(
+                    parent.properties?.style,
+                    `--image-slider-aspect-ratio: ${placeholder.width} / ${placeholder.height};`
+                  ),
+                };
               }
 
               parent.children[index] = withBlurImageWrapper(node, placeholder);

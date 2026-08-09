@@ -94,6 +94,25 @@ yarn sync:obsidian -- --prune
   - `public/sitemap.xml`
   - `public/robots.txt`
 
+## 본문 이미지 슬라이더
+
+이미지 파일을 글의 Markdown 파일과 같은 폴더에 두고, 본문에 아래처럼 작성합니다. 로컬 이미지는 일반 본문 이미지와 동일하게 빌드 시 복사되고 blur placeholder가 적용됩니다.
+
+```html
+<div class="image-slider" role="region" aria-label="작품 모음" tabindex="0">
+  <figure>
+    <img src="./artwork-01.jpg" alt="첫 번째 작품 설명" />
+    <figcaption>작품명, 제작 연도</figcaption>
+  </figure>
+  <figure>
+    <img src="./artwork-02.jpg" alt="두 번째 작품 설명" />
+    <figcaption>작품명, 제작 연도</figcaption>
+  </figure>
+</div>
+```
+
+모바일에서는 손가락으로, 데스크톱에서는 트랙패드·가로 스크롤로 넘길 수 있습니다. 각 작품은 스크롤 스냅 지점에 맞춰 정렬됩니다.
+
 ## Blog Essentials
 
 기술 블로그 운영을 위한 기본 SEO/배포 산출물을 빌드 시 자동 생성합니다.
