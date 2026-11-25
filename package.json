@@ -8,14 +8,15 @@
   "type": "module",
   "scripts": {
     "new:post": "node ./scripts/new-post.mjs",
+    "modern-screenshot": "node ./experiments/resource-priority/capture-modern.mjs",
     "sync:obsidian": "node ./scripts/sync-obsidian-fleeting.mjs",
     "generate:content": "node ./scripts/generate-content.mjs",
     "dev": "node ./scripts/generate-content.mjs && react-router dev",
-    "build": "node ./scripts/generate-content.mjs && react-router build",
+    "build": "node ./scripts/generate-content.mjs && react-router build && node ./scripts/prioritize-stylesheets.mjs",
     "typecheck": "node ./scripts/generate-content.mjs && react-router typegen && tsc",
     "test:e2e": "playwright test",
     "test:e2e:scroll": "playwright test tests/e2e/scroll-restoration.spec.ts",
-    "verify": "node ./scripts/generate-content.mjs && react-router typegen && tsc && node ./scripts/generate-content.mjs && react-router build",
+    "verify": "yarn typecheck && yarn build && node --test experiments/resource-priority/html-variants.test.mjs",
     "lint-staged": "lint-staged",
     "husky:install": "husky",
     "postinstall": "node ./scripts/setup-husky.mjs"
