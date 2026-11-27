@@ -1,0 +1,237 @@
+[
+  {
+    "variant": "before",
+    "metrics": {
+      "code": [
+        {
+          "text": "import React, { lazy, Suspense } from \"react\";\nimport { BrowserRouter as Router, Routes, Route } from \"react-router-dom\";\n\nconst Home = lazy(() => import(\"./pages/Home\"));\nconst About = lazy(() => import(\"./pages/About\"));\nconst UserProfile = lazy(() => import(\"./pages/UserProfile\"));\n\nconst Loader = () => (\n  <div>\n    <p>Loading...</p>\n  </div>\n);\n\nfunction App() {\n  return (\n    <Router>\n      <Suspense fallback={<Loader />}>\n        <Routes>\n          <Route path=\"/\" element={<Home />} />\n          <Route path=\"/about\" element={<About />} />\n          <Route path=\"/profile/:id\" element={<UserProfile />} />\n        </Routes>\n      </Suspense>\n    </Router>\n  );\n}\n\nexport default App;\n",
+          "width": 700,
+          "height": 562.84375,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "// 1-1. JSON 직렬화가 가능한 컴포넌트 예시\nReact.createElement(\"div\", { title: \"oh my\" })\n// 1-2. 가상돔 변환\n{\n  $$typeof: Symbol(react.element),\n  type: \"div\",\n  props: { title: \"oh my\" },\n  ...\n}\n",
+          "width": 700,
+          "height": 198.28125,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "// 2-1. JSON 직렬화가 불가능한 예시\nfunction MyComponent({children}) {\n  return <div>{children}</div>;\n}\n// 2-2. 가상돔 변환 불가능\n{\n  $$typeof: Symbol(react.element),\n  type: MyComponent  // 함수는 JSON이 못 돼요!\n  props: { children: \"oh my\" },\n  ...\n}\n",
+          "width": 700,
+          "height": 236.65625,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "// 3-1. 함수 컴포넌트의 참조를 경로로 대체하여 JSON 직렬화 가능\n{\n  $$typeof: Symbol(react.element),\n  type: {\n    $$typeof: Symbol(react.module.reference),\n    name: \"default\",\n    // 3-2. 번들러가 생성한 경로\n    filename: \"./src/ClientComponent.client.js\"\n  },\n  props: {\n    children: {\n      $$typeof: Symbol(react.element),\n      type: \"span\",\n      props: {\n        children: \"Hello from server land\"\n      }\n    }\n  }\n}\n",
+          "width": 700,
+          "height": 390.15625,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "const SUSPENSE_START_DATA = \"$\";\nconst SUSPENSE_END_DATA = \"/$\";\nconst SUSPENSE_PENDING_START_DATA = \"$?\";\nconst SUSPENSE_FALLBACK_START_DATA = \"$!\";\n",
+          "width": 700,
+          "height": 102.34375,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "// vite.config.ts\nimport { reactRouter } from \"@react-router/dev/vite\";\nimport { defineConfig } from \"vite\";\n\nexport default defineConfig({\n  plugins: [\n    reactRouter({\n      // return a list of URLs to prerender at build time\n      async prerender() {\n        return [\"/\", \"/about\", \"/contact\"];\n      },\n    }),\n  ],\n});\n",
+          "width": 700,
+          "height": 294.21875,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "export async function loader() {\n  return {\n    products: <Products />,\n    reviews: <Reviews />,\n  };\n}\n\nexport default function App({ data }) {\n  return (\n    <div>\n      {data.products}\n      {data.reviews}\n    </div>\n  );\n}\n",
+          "width": 700,
+          "height": 313.40625,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "{\n  \"scripts\": {\n    \"dev\": \"react-router dev\",\n    \"build\": \"react-router build\",\n    \"start\": \"react-router-serve ./build/server/index.js\",\n    \"typecheck\": \"react-router typegen && tsc\"\n  },\n  \"devDependencies\": {\n    \"@react-router/dev\": \"^7.0.0-pre.1\",\n    // 생략\n    \"vite\": \"^5.4.9\"\n  },\n  \"dependencies\": {\n    \"@react-router/node\": \"^7.0.0-pre.1\",\n    \"@react-router/serve\": \"^7.0.0-pre.1\",\n    // 생략\n    \"react-router\": \"^7.0.0-pre.1\"\n  }\n}\n",
+          "width": 700,
+          "height": 390.15625,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        }
+      ],
+      "fira": [
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "loaded"
+        }
+      ],
+      "resources": [
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/profile-pic-BeCn7zE_.jpeg",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/style-DqXtgUUs.css",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/manifest-f7f324f9.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/entry.client-DfQdTM7C.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/theme.css-JB5r3D84.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/root-wfO4Yofn.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/chunk-JZWAC4HX-CYZ_VfUs.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/post--gGNzfDC.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/index-DB2E2jPQ.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/.netlify/scripts/rum",
+        "https://fonts.googleapis.com/css2?family=Fira+Code&display=swap",
+        "https://www.googletagmanager.com/gtm.js?id=GTM-NGXTQ8ZS",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/Pretendard-Black.subset-CMeB3ivP.woff2",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/Pretendard-Bold.subset-DlG79Eat.woff2",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/Pretendard-Regular.subset-DW6lkupW.woff2",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/content/blog/react/rrv7-static-prerendering/image.png",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/content/blog/react/rrv7-static-prerendering/image-1.png",
+        "https://utteranc.es/client.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/_root.data",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/home-BR88Hp3A.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/thumbnails/main-github.png",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/thumbnails/main-github.png"
+      ]
+    },
+    "file": "docs/pr/font-delivery/code-1280-before.png"
+  },
+  {
+    "variant": "after",
+    "metrics": {
+      "code": [
+        {
+          "text": "import React, { lazy, Suspense } from \"react\";\nimport { BrowserRouter as Router, Routes, Route } from \"react-router-dom\";\n\nconst Home = lazy(() => import(\"./pages/Home\"));\nconst About = lazy(() => import(\"./pages/About\"));\nconst UserProfile = lazy(() => import(\"./pages/UserProfile\"));\n\nconst Loader = () => (\n  <div>\n    <p>Loading...</p>\n  </div>\n);\n\nfunction App() {\n  return (\n    <Router>\n      <Suspense fallback={<Loader />}>\n        <Routes>\n          <Route path=\"/\" element={<Home />} />\n          <Route path=\"/about\" element={<About />} />\n          <Route path=\"/profile/:id\" element={<UserProfile />} />\n        </Routes>\n      </Suspense>\n    </Router>\n  );\n}\n\nexport default App;\n",
+          "width": 700,
+          "height": 562.84375,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "// 1-1. JSON 직렬화가 가능한 컴포넌트 예시\nReact.createElement(\"div\", { title: \"oh my\" })\n// 1-2. 가상돔 변환\n{\n  $$typeof: Symbol(react.element),\n  type: \"div\",\n  props: { title: \"oh my\" },\n  ...\n}\n",
+          "width": 700,
+          "height": 198.28125,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "// 2-1. JSON 직렬화가 불가능한 예시\nfunction MyComponent({children}) {\n  return <div>{children}</div>;\n}\n// 2-2. 가상돔 변환 불가능\n{\n  $$typeof: Symbol(react.element),\n  type: MyComponent  // 함수는 JSON이 못 돼요!\n  props: { children: \"oh my\" },\n  ...\n}\n",
+          "width": 700,
+          "height": 236.65625,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "// 3-1. 함수 컴포넌트의 참조를 경로로 대체하여 JSON 직렬화 가능\n{\n  $$typeof: Symbol(react.element),\n  type: {\n    $$typeof: Symbol(react.module.reference),\n    name: \"default\",\n    // 3-2. 번들러가 생성한 경로\n    filename: \"./src/ClientComponent.client.js\"\n  },\n  props: {\n    children: {\n      $$typeof: Symbol(react.element),\n      type: \"span\",\n      props: {\n        children: \"Hello from server land\"\n      }\n    }\n  }\n}\n",
+          "width": 700,
+          "height": 390.15625,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "const SUSPENSE_START_DATA = \"$\";\nconst SUSPENSE_END_DATA = \"/$\";\nconst SUSPENSE_PENDING_START_DATA = \"$?\";\nconst SUSPENSE_FALLBACK_START_DATA = \"$!\";\n",
+          "width": 700,
+          "height": 102.34375,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "// vite.config.ts\nimport { reactRouter } from \"@react-router/dev/vite\";\nimport { defineConfig } from \"vite\";\n\nexport default defineConfig({\n  plugins: [\n    reactRouter({\n      // return a list of URLs to prerender at build time\n      async prerender() {\n        return [\"/\", \"/about\", \"/contact\"];\n      },\n    }),\n  ],\n});\n",
+          "width": 700,
+          "height": 294.21875,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "export async function loader() {\n  return {\n    products: <Products />,\n    reviews: <Reviews />,\n  };\n}\n\nexport default function App({ data }) {\n  return (\n    <div>\n      {data.products}\n      {data.reviews}\n    </div>\n  );\n}\n",
+          "width": 700,
+          "height": 313.40625,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        },
+        {
+          "text": "{\n  \"scripts\": {\n    \"dev\": \"react-router dev\",\n    \"build\": \"react-router build\",\n    \"start\": \"react-router-serve ./build/server/index.js\",\n    \"typecheck\": \"react-router typegen && tsc\"\n  },\n  \"devDependencies\": {\n    \"@react-router/dev\": \"^7.0.0-pre.1\",\n    // 생략\n    \"vite\": \"^5.4.9\"\n  },\n  \"dependencies\": {\n    \"@react-router/node\": \"^7.0.0-pre.1\",\n    \"@react-router/serve\": \"^7.0.0-pre.1\",\n    // 생략\n    \"react-router\": \"^7.0.0-pre.1\"\n  }\n}\n",
+          "width": 700,
+          "height": 390.15625,
+          "scrollWidth": 700,
+          "font": "\"Fira Code\", Menlo, Monaco, Consolas, \"Andale Mono\", \"Ubuntu Mono\", \"Courier New\", monospace"
+        }
+      ],
+      "fira": [
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "loaded"
+        }
+      ],
+      "resources": [
+        "http://127.0.0.1:4178/assets/profile-pic-BeCn7zE_.jpeg",
+        "http://127.0.0.1:4178/assets/manifest-92dc6b4c.js",
+        "http://127.0.0.1:4178/assets/style-DhmikV5b.css",
+        "http://127.0.0.1:4178/assets/theme.css-JB5r3D84.js",
+        "http://127.0.0.1:4178/assets/root-wfO4Yofn.js",
+        "http://127.0.0.1:4178/assets/index-DB2E2jPQ.js",
+        "http://127.0.0.1:4178/assets/post--gGNzfDC.js",
+        "http://127.0.0.1:4178/assets/chunk-JZWAC4HX-CYZ_VfUs.js",
+        "http://127.0.0.1:4178/assets/entry.client-DfQdTM7C.js",
+        "https://www.googletagmanager.com/gtm.js?id=GTM-NGXTQ8ZS",
+        "http://127.0.0.1:4178/assets/Pretendard-Black.subset-CMeB3ivP.woff2",
+        "http://127.0.0.1:4178/assets/Pretendard-Bold.subset-DlG79Eat.woff2",
+        "http://127.0.0.1:4178/assets/Pretendard-Regular.subset-DW6lkupW.woff2",
+        "http://127.0.0.1:4178/assets/FiraCode-Regular-latin-DMK9ee42.woff2",
+        "http://127.0.0.1:4178/content/blog/react/rrv7-static-prerendering/image.png",
+        "http://127.0.0.1:4178/content/blog/react/rrv7-static-prerendering/image-1.png",
+        "https://utteranc.es/client.js",
+        "http://127.0.0.1:4178/_root.data",
+        "http://127.0.0.1:4178/assets/home-BR88Hp3A.js",
+        "http://127.0.0.1:4178/thumbnails/main-github.png",
+        "http://127.0.0.1:4178/thumbnails/main-github.png"
+      ]
+    },
+    "file": "docs/pr/font-delivery/code-1280-after.png"
+  }
+]

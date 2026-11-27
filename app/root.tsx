@@ -14,6 +14,7 @@ import siteConfig from "~/lib/site-config";
 import { lightTheme } from "~/styles/theme.css";
 import "~/styles/global.css";
 import "~/fonts/Pretendard/pretendard.css";
+import "~/fonts/FiraCode/fira-code.css";
 import "~/prism/prism-vsc-dark-plus.css";
 import "katex/dist/katex.min.css";
 
