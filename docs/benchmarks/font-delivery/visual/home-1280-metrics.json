@@ -1,0 +1,117 @@
+[
+  {
+    "variant": "before",
+    "metrics": {
+      "code": [],
+      "fira": [
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        }
+      ],
+      "resources": [
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/profile-pic-BeCn7zE_.jpeg",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/manifest-f7f324f9.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/style-DqXtgUUs.css",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/entry.client-DfQdTM7C.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/chunk-JZWAC4HX-CYZ_VfUs.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/root-wfO4Yofn.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/theme.css-JB5r3D84.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/home-BR88Hp3A.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/index-DB2E2jPQ.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/.netlify/scripts/rum",
+        "https://fonts.googleapis.com/css2?family=Fira+Code&display=swap",
+        "https://www.googletagmanager.com/gtm.js?id=GTM-NGXTQ8ZS",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/Pretendard-Black.subset-CMeB3ivP.woff2",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/Pretendard-Bold.subset-DlG79Eat.woff2",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/Pretendard-Regular.subset-DW6lkupW.woff2",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/article/carpenters-life.data",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/assets/post--gGNzfDC.js",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/article/tranning-buying.data",
+        "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app/thumbnails/main-github.png"
+      ]
+    },
+    "file": "docs/benchmarks/font-delivery/visual/home-1280-before.png"
+  },
+  {
+    "variant": "after",
+    "metrics": {
+      "code": [],
+      "fira": [
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        },
+        {
+          "weight": "400",
+          "status": "unloaded"
+        }
+      ],
+      "resources": [
+        "https://saengmotmi.netlify.app/assets/profile-pic-BeCn7zE_.jpeg",
+        "https://saengmotmi.netlify.app/assets/style-DhmikV5b.css",
+        "https://saengmotmi.netlify.app/assets/manifest-92dc6b4c.js",
+        "https://saengmotmi.netlify.app/assets/entry.client-DfQdTM7C.js",
+        "https://saengmotmi.netlify.app/assets/root-wfO4Yofn.js",
+        "https://saengmotmi.netlify.app/assets/chunk-JZWAC4HX-CYZ_VfUs.js",
+        "https://saengmotmi.netlify.app/assets/theme.css-JB5r3D84.js",
+        "https://saengmotmi.netlify.app/assets/home-BR88Hp3A.js",
+        "https://saengmotmi.netlify.app/assets/index-DB2E2jPQ.js",
+        "https://saengmotmi.netlify.app/.netlify/scripts/rum",
+        "https://www.googletagmanager.com/gtm.js?id=GTM-NGXTQ8ZS",
+        "https://saengmotmi.netlify.app/assets/Pretendard-Black.subset-CMeB3ivP.woff2",
+        "https://saengmotmi.netlify.app/assets/Pretendard-Bold.subset-DlG79Eat.woff2",
+        "https://saengmotmi.netlify.app/assets/Pretendard-Regular.subset-DW6lkupW.woff2",
+        "https://saengmotmi.netlify.app/article/carpenters-life.data",
+        "https://saengmotmi.netlify.app/assets/post--gGNzfDC.js",
+        "https://saengmotmi.netlify.app/article/tranning-buying.data",
+        "https://saengmotmi.netlify.app/thumbnails/main-github.png"
+      ]
+    },
+    "file": "docs/benchmarks/font-delivery/visual/home-1280-after.png"
+  }
+]

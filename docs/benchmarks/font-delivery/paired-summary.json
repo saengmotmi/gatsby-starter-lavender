@@ -1,0 +1,32 @@
+[
+  {
+    "route": "/",
+    "pairedMedianDelta": -656,
+    "pairedBootstrap95": [
+      -760,
+      -532
+    ],
+    "renderDelayBefore": 1745,
+    "renderDelayAfter": 1124.9000000953674
+  },
+  {
+    "route": "/react/what-is-rsc/",
+    "pairedMedianDelta": -660,
+    "pairedBootstrap95": [
+      -744,
+      -460
+    ],
+    "renderDelayBefore": 1949.3999998569489,
+    "renderDelayAfter": 1337
+  },
+  {
+    "route": "/react/rrv7-static-prerendering/",
+    "pairedMedianDelta": -556,
+    "pairedBootstrap95": [
+      -732,
+      -524
+    ],
+    "renderDelayBefore": 1855.2000000476837,
+    "renderDelayAfter": 1239.2999999523163
+  }
+]

@@ -1,0 +1,53 @@
+[
+  {
+    "route": "/",
+    "before": 2540,
+    "after": 1884,
+    "changePct": -25.82677165354331,
+    "pairedDifferences": [
+      -664,
+      -580,
+      -656,
+      -760,
+      -532
+    ],
+    "ttfbBefore": 798.2000000476837,
+    "ttfbAfter": 751.0999999046326,
+    "clsBefore": 0.0010180300970040643,
+    "clsAfter": 0.0010180300970040643
+  },
+  {
+    "route": "/react/what-is-rsc/",
+    "before": 2780,
+    "after": 2108,
+    "changePct": -24.172661870503596,
+    "pairedDifferences": [
+      -660,
+      -460,
+      -744,
+      -704,
+      -648
+    ],
+    "ttfbBefore": 818.0999999046326,
+    "ttfbAfter": 771,
+    "clsBefore": 0.0000753912848459874,
+    "clsAfter": 0.0000753912848459874
+  },
+  {
+    "route": "/react/rrv7-static-prerendering/",
+    "before": 2616,
+    "after": 2048,
+    "changePct": -21.712538226299692,
+    "pairedDifferences": [
+      -556,
+      -568,
+      -552,
+      -524,
+      -732
+    ],
+    "ttfbBefore": 760.7999999523163,
+    "ttfbAfter": 800.7000000476837,
+    "clsBefore": 0.00024952493338637654,
+    "clsAfter": 0.00024952493338637654
+  }
+]

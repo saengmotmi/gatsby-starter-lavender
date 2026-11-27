@@ -1,0 +1,60 @@
+{
+  "published": {
+    "id": "6b09622f4d6e37cb375a4cf7",
+    "state": "ready",
+    "context": "production",
+    "commit_ref": "d7a68554ba6820dc1512a43580e63a2a58f2c0b1",
+    "published_at": "2026-11-27T10:58:27.864Z",
+    "deploy_ssl_url": "https://main--saengmotmi.netlify.app"
+  },
+  "latest": [
+    {
+      "id": "6b09622f4d6e37cb375a4cf7",
+      "state": "ready",
+      "context": "production",
+      "commit_ref": "d7a68554ba6820dc1512a43580e63a2a58f2c0b1",
+      "published_at": "2026-11-27T10:58:27.864Z",
+      "deploy_ssl_url": "https://main--saengmotmi.netlify.app"
+    },
+    {
+      "id": "6b0961f55f220859d1aaefe0",
+      "state": "ready",
+      "context": "production",
+      "commit_ref": "b180009b5b7586aa96106ff3779e71380375c0d5",
+      "published_at": "2026-11-27T10:57:31.123Z",
+      "deploy_ssl_url": "https://main--saengmotmi.netlify.app"
+    },
+    {
+      "id": "6b0961a244f6f9a3e54aaa17",
+      "state": "ready",
+      "context": "deploy-preview",
+      "commit_ref": "f70a582a03558896ab6c44245ba886af98405542",
+      "published_at": null,
+      "deploy_ssl_url": "https://deploy-preview-50--saengmotmi.netlify.app"
+    },
+    {
+      "id": "6b096157281af6f9a6c9e0d5",
+      "state": "ready",
+      "context": "deploy-preview",
+      "commit_ref": "678d9c02e87ffccb5a76c8bdaf64fdfb00c81be6",
+      "published_at": null,
+      "deploy_ssl_url": "https://deploy-preview-49--saengmotmi.netlify.app"
+    },
+    {
+      "id": "6b062ea0074c202c5c9bbf55",
+      "state": "ready",
+      "context": "production",
+      "commit_ref": "212f56277ccefca3cd53ac1318dfba5597cf8d11",
+      "published_at": "2026-11-25T00:41:45.954Z",
+      "deploy_ssl_url": "https://main--saengmotmi.netlify.app"
+    },
+    {
+      "id": "6b062e08dbff401007595bc3",
+      "state": "ready",
+      "context": "deploy-preview",
+      "commit_ref": "126d164b29832c5cd505725c130387197a1b4b45",
+      "published_at": null,
+      "deploy_ssl_url": "https://deploy-preview-48--saengmotmi.netlify.app"
+    }
+  ]
+}

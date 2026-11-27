@@ -1,0 +1,42 @@
+{
+  "origin": "https://saengmotmi.netlify.app",
+  "at": "2026-11-27T10:59:10.174Z",
+  "rows": [
+    {
+      "path": "/",
+      "status": 200,
+      "cacheControl": "public,max-age=0,must-revalidate",
+      "cacheStatus": "\"Netlify Edge\"; hit; ttl=299"
+    },
+    {
+      "path": "/react/what-is-rsc/",
+      "status": 200,
+      "cacheControl": "public,max-age=0,must-revalidate",
+      "cacheStatus": "\"Netlify Edge\"; fwd=stale; fwd-status=200; ttl=-1496; stored"
+    },
+    {
+      "path": "/assets/style-DhmikV5b.css",
+      "status": 200,
+      "cacheControl": "public,max-age=31536000,immutable",
+      "cacheStatus": "\"Netlify Edge\"; hit; ttl=31535999"
+    },
+    {
+      "path": "/assets/manifest-92dc6b4c.js",
+      "status": 200,
+      "cacheControl": "public,max-age=31536000,immutable",
+      "cacheStatus": "\"Netlify Edge\"; fwd=miss; fwd-status=200; stored"
+    },
+    {
+      "path": "/assets/Pretendard-Regular.subset-DW6lkupW.woff2",
+      "status": 200,
+      "cacheControl": "public,max-age=31536000,immutable",
+      "cacheStatus": "\"Netlify Edge\"; fwd=stale; fwd-status=200; ttl=-1544; stored"
+    },
+    {
+      "path": "/sw.js",
+      "status": 200,
+      "cacheControl": "no-cache,no-store,must-revalidate",
+      "cacheStatus": "\"Netlify Edge\"; fwd=miss; fwd-status=200; stored"
+    }
+  ]
+}

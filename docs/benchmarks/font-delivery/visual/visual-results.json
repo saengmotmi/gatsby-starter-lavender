@@ -1,0 +1,42 @@
+{
+  "before": "https://6b062ea0074c202c5c9bbf55--saengmotmi.netlify.app",
+  "after": "https://saengmotmi.netlify.app",
+  "results": [
+    {
+      "name": "home",
+      "width": 390,
+      "suffix": "",
+      "diffPixels": 0
+    },
+    {
+      "name": "code",
+      "width": 390,
+      "suffix": "",
+      "diffPixels": 0
+    },
+    {
+      "name": "code",
+      "width": 390,
+      "suffix": "-block",
+      "diffPixels": 0
+    },
+    {
+      "name": "home",
+      "width": 1280,
+      "suffix": "",
+      "diffPixels": 0
+    },
+    {
+      "name": "code",
+      "width": 1280,
+      "suffix": "",
+      "diffPixels": 0
+    },
+    {
+      "name": "code",
+      "width": 1280,
+      "suffix": "-block",
+      "diffPixels": 0
+    }
+  ]
+}
