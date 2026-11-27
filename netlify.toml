@@ -5,6 +5,14 @@
 [build.environment]
   NODE_VERSION = "24"
 
+# Netlify applies matching rules in order. Put defaults before specific policies
+# so the catch-all cannot replace immutable assets or the service-worker policy.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    "Netlify-CDN-Cache-Control" = "public, max-age=300, stale-while-revalidate=86400"
+
 [[headers]]
   for = "/assets/*"
   [headers.values]
@@ -30,9 +38,3 @@
     Pragma = "no-cache"
     Expires = "0"
     Service-Worker-Allowed = "/"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-    "Netlify-CDN-Cache-Control" = "public, max-age=300, stale-while-revalidate=86400"
