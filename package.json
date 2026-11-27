@@ -16,7 +16,7 @@
     "typecheck": "node ./scripts/generate-content.mjs && react-router typegen && tsc",
     "test:e2e": "playwright test",
     "test:e2e:scroll": "playwright test tests/e2e/scroll-restoration.spec.ts",
-    "verify": "yarn typecheck && yarn build && node --test experiments/resource-priority/html-variants.test.mjs",
+    "verify": "yarn typecheck && yarn build && node --test experiments/resource-priority/html-variants.test.mjs experiments/font-delivery/font-assets.test.mjs",
     "lint-staged": "lint-staged",
     "husky:install": "husky",
     "postinstall": "node ./scripts/setup-husky.mjs"

@@ -1,0 +1,37 @@
+[
+  {
+    "file": "FiraCode-Regular-cyrillic-ext.woff2",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9eCBsR6Z2vfE9aq3bL0fxyUs4tcw4W_D1sJV37NuzlojwUKaJO.woff2",
+    "sha256": "171b1b64ec24f2b8d4403dd8157d2989633f5bc9e7b08d5470f6391ae651d697"
+  },
+  {
+    "file": "FiraCode-Regular-cyrillic.woff2",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9eCBsR6Z2vfE9aq3bL0fxyUs4tcw4W_D1sJVT7NuzlojwUKaJO.woff2",
+    "sha256": "86dd74dbf81460be75bebeeb31ca9e9b696df3dd2a0597ad222c472701fd7aa9"
+  },
+  {
+    "file": "FiraCode-Regular-greek-ext.woff2",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9eCBsR6Z2vfE9aq3bL0fxyUs4tcw4W_D1sJVz7NuzlojwUKaJO.woff2",
+    "sha256": "84d4b8f20a1afa93024db12d4fa21c1b9915b0e59b5132d3c765db30bba725e1"
+  },
+  {
+    "file": "FiraCode-Regular-greek.woff2",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9eCBsR6Z2vfE9aq3bL0fxyUs4tcw4W_D1sJVP7NuzlojwUKaJO.woff2",
+    "sha256": "fe36f9133ac5b3058c6f80c7f136f1fa29a5993d796d4922e3065ffae79f323e"
+  },
+  {
+    "file": "FiraCode-Regular-symbols2.woff2",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9eCBsR6Z2vfE9aq3bL0fxyUs4tcw4W_D1sJeraE8PLrjQEOJt3yg.woff2",
+    "sha256": "6db17ed1d725b02e13c38c7fd668f88306847cd0bfe018252cd4bbc255df73fa"
+  },
+  {
+    "file": "FiraCode-Regular-latin-ext.woff2",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9eCBsR6Z2vfE9aq3bL0fxyUs4tcw4W_D1sJV77NuzlojwUKaJO.woff2",
+    "sha256": "e085302eadab753affd241cc3798c2fcc0545e5832f2bdd1bd4d24d3b845fb2d"
+  },
+  {
+    "file": "FiraCode-Regular-latin.woff2",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9eCBsR6Z2vfE9aq3bL0fxyUs4tcw4W_D1sJVD7NuzlojwUKQ.woff2",
+    "sha256": "5c18638f71017f85e57ee3ae86cdb2ed1f7f0fb57ac0ebea115354f429ba99a6"
+  }
+]

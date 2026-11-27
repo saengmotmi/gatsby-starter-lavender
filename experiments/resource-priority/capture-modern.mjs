@@ -15,7 +15,11 @@ const browser = await chromium.launch();
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   const origin = new URL(url).origin;
-  await page.route('**/*', route => route.request().url().startsWith(origin) ? route.continue() : route.abort());
+  await page.route('**/*', route => {
+    const url = new URL(route.request().url());
+    const webFont = process.env.ALLOW_WEB_FONTS === '1' && ['fonts.googleapis.com', 'fonts.gstatic.com'].includes(url.hostname);
+    return url.origin === origin || webFont ? route.continue() : route.abort();
+  });
   await page.goto(url);
   await page.evaluate(() => document.fonts.ready);
   await page.addScriptTag({ content: source });
